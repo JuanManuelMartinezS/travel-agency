@@ -8,7 +8,7 @@ const routes: Routes = [
     path: '',
     component: UserComponent,
     children: [
-      { path: '', redirectTo: 'components', pathMatch: 'full' },
+      { path: '', redirectTo: 'table', pathMatch: 'full' },
       { path: 'table', component: TableComponent },
       { path: '**', redirectTo: 'errors/404' },
     ],

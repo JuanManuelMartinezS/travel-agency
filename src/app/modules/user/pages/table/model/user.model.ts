@@ -6,7 +6,7 @@ export interface User {
   email: string;
   phone: string;
   website: string;
-  occupation: string;
+
   hobbies: string[];
   selected: boolean;
   status: number;
