@@ -8,8 +8,7 @@ import { TableHeaderComponent } from './components/table-header/table-header.com
 import { TableRowComponent } from './components/table-row/table-row.component';
 import { User } from '../../models/user.model';
 import { TableFilterService } from './services/table-filter.service';
-import { UserService } from '../../services/user.service'; // Importa el UserService
-import { catchError, of } from 'rxjs'; // Importa operadores de RxJS
+import { UserService } from '../../services/user.service'; 
 
 @Component({
   selector: 'app-table',
