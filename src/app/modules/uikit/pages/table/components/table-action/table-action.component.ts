@@ -1,28 +1,37 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { AngularSvgIconModule } from 'angular-svg-icon';
-import { TableFilterService } from '../../services/table-filter.service';
 
 @Component({
   selector: 'app-table-action',
-  imports: [AngularSvgIconModule],
+  imports: [AngularSvgIconModule, CommonModule, FormsModule],
   templateUrl: './table-action.component.html',
   styleUrl: './table-action.component.css',
 })
 export class TableActionComponent {
-  constructor(public filterService: TableFilterService) {}
+  // Recibe las opciones de los select y placeholders
+  @Input() searchPlaceholder: string = '';
+  @Input() statusOptions: { value: string; label: string}[] = [];
+  @Input() orderOptions: { value: string; label: string}[] = [];
 
-  onSearchChange(value: Event) {
-    const input = value.target as HTMLInputElement;
-    this.filterService.searchField.set(input.value);
+  // Emite los eventos de cambio
+  @Output() searchChange = new EventEmitter<string>();
+  @Output() statusChange = new EventEmitter<string>();
+  @Output() orderChange = new EventEmitter<string>();
+
+  onSearchChange(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchChange.emit(value)
   }
 
-  onStatusChange(value: Event) {
-    const selectElement = value.target as HTMLSelectElement;
-    this.filterService.statusField.set(selectElement.value);
+  onStatusChange(event: Event) {
+    const value = (event.target as HTMLSelectElement).value;
+    this.statusChange.emit(value);
   }
 
-  onOrderChange(value: Event) {
-    const selectElement = value.target as HTMLSelectElement;
-    this.filterService.orderField.set(selectElement.value);
+  onOrderChange(event: Event) {
+    const value = (event.target as HTMLSelectElement).value;
+    this.orderChange.emit(value);
   }
 }
