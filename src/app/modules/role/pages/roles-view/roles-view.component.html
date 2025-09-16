@@ -1,0 +1,22 @@
+<div class="mb-4 flex justify-between">
+  <div class="inline-block">
+    <h3 class="text-foreground font-semibold">Roles List</h3>
+    <div class="text-muted-foreground space-x-1 text-xs font-medium">
+      <span class="text-foreground">Total Roles: {{ roles().length }}</span>
+    </div>
+  </div>
+  <div class="inline-block space-x-4">
+    <button class="bg-primary text-primary-foreground flex-none rounded-md px-4 py-2.5 text-xs font-semibold">
+      Add Role
+    </button>
+  </div>
+</div>
+
+<app-table
+  [data]="roles()"
+  [columns]="columns"
+  [title]="'Roles List'"
+  (deleteRow)="onDeleteRole($event)"
+  (viewRow)="onViewRole($event)"
+  (editRow)="onEditRole($event)">
+</app-table>

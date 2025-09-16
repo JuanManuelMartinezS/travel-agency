@@ -1,11 +1,13 @@
-<ng-container>
-  <th class="w-[50px]">
-    <input (change)="toggle($event)" class="checkbox checkbox-sm" data-datatable-check="true" type="checkbox" />
+<tr>
+  <th class="px-2 py-4 text-center">
+    <input
+      type="checkbox"
+      class="checkbox checkbox-sm"
+      (change)="toggle($event)"
+    />
   </th>
-  <th class="min-w-[300px]">Member</th>
-  <th class="min-w-[180px]">Username</th>
-  <th class="min-w-[180px]">Hobbies</th>
-  <th class="min-w-[180px]">Occupation</th>
-  <th class="min-w-[150px]">Phone</th>
-  <th class="w-[60px]"></th>
-</ng-container>
+  @for (column of columns; track $index) {
+    <th class="px-2 py-4"{{ column | titlecase }}></th>
+  }
+  <th class="px-2 py-4">Actions</th>
+</tr>

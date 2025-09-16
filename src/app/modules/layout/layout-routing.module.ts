@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LayoutComponent } from './layout.component';
-import { UserComponent } from '../user/user.component';
+
 
 const routes: Routes = [
   {
@@ -16,8 +16,13 @@ const routes: Routes = [
   },
   {
     path: 'users',
-    component: UserComponent,
+    component: LayoutComponent,
     loadChildren: () => import('../user/user.module').then((m) => m.UserModule),
+  },
+  {
+    path: 'roles',
+    component: LayoutComponent,
+    loadChildren: () => import('../role/role.module').then((m) => m.RoleModule),
   },
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: '**', redirectTo: 'error/404' },

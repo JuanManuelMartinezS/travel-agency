@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
-  selector: 'app-user',
+  selector: 'app-role',
   imports: [RouterOutlet],
-  templateUrl: './user.component.html',
-  styleUrl: './user.component.css'
+  templateUrl: './role.component.html',
+  styleUrl: './role.component.css'
 })
-export class UserComponent {
+export class RoleComponent {
 
 }
