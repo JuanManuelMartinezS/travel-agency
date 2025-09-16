@@ -35,7 +35,7 @@
         <input 
           type="text" 
           class="bg-background border-muted/20 text-foreground placeholder-muted-foreground w-full rounded-lg border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-          [value]="user()?.id || ''"
+          [value]="user()?._id || ''"
           disabled
         >
       </div>

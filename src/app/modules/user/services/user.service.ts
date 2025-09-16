@@ -16,11 +16,11 @@ export class UserService {
     return this.http.get<User>(`${environment.url_ms_security}/users/${id}`);
   }
   create(newUser: User): Observable<User> {
-    delete newUser.id;
+    delete newUser._id;
     return this.http.post<User>(`${environment.url_ms_security}/users`, newUser);
   }
   update(theUser: User): Observable<User> {
-    return this.http.put<User>(`${environment.url_ms_security}/users/${theUser.id}`, theUser);
+    return this.http.put<User>(`${environment.url_ms_security}/users/${theUser._id}`, theUser);
   }
 
   delete(id: number) {

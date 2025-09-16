@@ -158,6 +158,15 @@ export class TableComponent implements OnInit {
     toast.info('Función de importación CSV en desarrollo');
   }
 
+  public onUserSelectionChange(event: {user: User, selected: boolean}): void {
+    this.users.update((users) => {
+      return users.map((user) => 
+        user._id === event.user._id 
+          ? { ...user, selected: event.selected }
+          : user
+      );
+    });
+  }
   public exportCSV(): void {
     const csvData = this.convertToCSV(this.users());
     this.downloadCSV(csvData, 'usuarios.csv');
@@ -169,7 +178,7 @@ export class TableComponent implements OnInit {
     const csvContent = [
       headers.join(','),
       ...users.map(user => [
-        user.id || '',
+        user._id || '',
         user.name || '',
         user.email || '',
         user.password || '',

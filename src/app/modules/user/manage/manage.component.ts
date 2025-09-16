@@ -16,7 +16,7 @@ import { ButtonComponent } from 'src/app/shared/components/button/button.compone
 })
 export class ManageComponent implements OnInit {
   mode = signal<number>(1); // 1: view, 2: create, 3: update
-  user = signal<User>({ id: 0 });
+  user = signal<User>({ _id: 0 });
   theFormGroup: FormGroup;
   trySend = signal<boolean>(false);
 
@@ -44,20 +44,23 @@ export class ManageComponent implements OnInit {
     this.updateFormValidators();
 
     if (this.activatedRoute.snapshot.params['id']) {
-      const userId = Number(this.activatedRoute.snapshot.params['id']);
-      this.user.update(user => ({ ...user, id: userId }));
+      console.log('Route has ID parameter', this.activatedRoute.snapshot.params['id']);
+      const userId = this.activatedRoute.snapshot.params['id'];
+      this.user.update(user => ({ ...user, _id: userId }));
       this.getUser(userId);
+      console.log('User ID from route:', userId);
+      console.log('Current mode:', this.mode());
+      console.log('User:', this.user());
     }
   }
 
   private configFormGroup(): FormGroup {
     return this.theFormBuilder.group({
-      id: [0],
+      _id: [0],
       name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       password: [''],
-      phone: [''],
-      birth_date: ['']
+  
     });
   }
 
@@ -87,16 +90,13 @@ export class ManageComponent implements OnInit {
     return this.theFormGroup.get('password');
   }
 
-  getUser(id: number): void {
-    this.userService.view(id).subscribe({
+  getUser(_id: number): void {
+    this.userService.view(_id).subscribe({
       next: (response) => {
         this.user.set(response);
         
-        // Format birth_date for input type="date" if it exists
-        let formattedBirthDate = '';
-     
         this.theFormGroup.patchValue({
-          id: response.id,
+          _id: response._id,
           name: response.name || '',
           email: response.email || '',
           password: response.password || '', 
@@ -116,7 +116,7 @@ export class ManageComponent implements OnInit {
   }
 
   back(): void {
-    this.router.navigate(['/users/list']);
+    this.router.navigate(['/users/table']);
   }
 
   create(): void {
@@ -131,7 +131,7 @@ export class ManageComponent implements OnInit {
     }
 
     const userData = { ...this.theFormGroup.value };
-    delete userData.id; // Remove ID for creation
+    delete userData._id; // Remove ID for creation
 
     this.userService.create(userData).subscribe({
       next: (user) => {
@@ -141,7 +141,7 @@ export class ManageComponent implements OnInit {
           text: 'Usuario creado correctamente.',
           icon: 'success',
         });
-        this.router.navigate(['/users/list']);
+        this.router.navigate(['/users/table']);
       },
       error: (error) => {
         console.error('Error creating user:', error);
@@ -180,7 +180,7 @@ export class ManageComponent implements OnInit {
           text: 'Usuario actualizado correctamente.',
           icon: 'success',
         });
-        this.router.navigate(['/users/list']);
+        this.router.navigate(['/users/table']);
       },
       error: (error) => {
         console.error('Error updating user:', error);
