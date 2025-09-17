@@ -3,7 +3,7 @@ import { Role } from './role.model';
 describe('Role', () => {
   it('should create an instance', () => {
     const testRole: Role = {
-      id: 1,
+      _id: '',
       name: 'tralala',
       description: ''
     };

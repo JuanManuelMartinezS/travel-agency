@@ -56,10 +56,15 @@ export class Menu {
           route: '/gift',
         },
         {
-          icon: 'assets/icons/heroicons/outline/users.svg',
-          label: 'Users',
-          route: '/users',
-        },
+          icon: 'assets/icons/heroicons/outline/shield-check.svg',
+          label: 'Security',
+          route: '/security',
+          children: [
+            {label: 'Users', route: '/users'},
+            {label: 'Roles', route: '/roles'}
+            // Meter el resto de entidades de seguridad
+          ]
+        }
       ],
     },
     {

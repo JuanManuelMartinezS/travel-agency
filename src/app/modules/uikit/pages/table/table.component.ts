@@ -25,7 +25,7 @@ export class TableComponent {
   @Input({ required: true }) data: any[] = [];
 
   // Recibir los headers de las columnas
-  @Input({required: true}) columns: string[] = [];
+  @Input({required: true}) columns: { key: string, label: string, width?: string}[] = [];
 
   // Recibir el titulo de tabla
   @Input() title: string = '';

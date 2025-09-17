@@ -1,18 +1,17 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AngularSvgIconModule } from 'angular-svg-icon';
-import { NgForOf } from '@angular/common';
-import { NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: '[app-table-row]',
-  imports: [FormsModule, AngularSvgIconModule, NgForOf, NgIf],
+  imports: [FormsModule, AngularSvgIconModule, CommonModule],
   templateUrl: './table-row.component.html',
   styleUrl: './table-row.component.css',
 })
 export class TableRowComponent {
   @Input() item: any = {};  // Cualquier entidad
-  @Input() columns: string[] = []; // Strings de las columnas
+  @Input() columns: { key: string, label: string, width?: string }[] = []; // Las columnas con sus cosas definidas
 
   // Emitir el evento
   @Output() delete = new EventEmitter<any>();

@@ -1,13 +1,13 @@
 <tr>
-  <th class="px-2 py-4 text-center">
+  <th class="w-[5%] px-2 py-3 text-center">
     <input
       type="checkbox"
       class="checkbox checkbox-sm"
       (change)="toggle($event)"
     />
   </th>
-  @for (column of columns; track $index) {
-    <th class="px-2 py-4"{{ column | titlecase }}></th>
+  @for (column of columns; track column.key) {
+    <th class="px-2 py-3 text-left" [style.width]="column.width || (100 / columns.length) + '%'">{{ column.label }}</th>
   }
-  <th class="px-2 py-4">Actions</th>
+  <th class="w-[15%] px-2 py-3 text-center">Acciones</th>
 </tr>

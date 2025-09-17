@@ -1,40 +1,23 @@
-<ng-container *ngFor="let column of columns">
-  <td>
-    <ng-container *ngIf="column === 'id'">
-      <!--Depronto aqui cambiar a _id si llega a haber un error-->
-      {{ item[column] }}
-    </ng-container>
-
-    <ng-container *ngIf="column === 'avatar'">
-      <div class="flex items-center gap-2.5">
-        <img
-          alt="avatar"
-          class="h-9 w-9 shrink-0 rounded-full"
-          src="https://ui-avatars.com/api/?name={{ item.name }}&background=random" />
-      </div>
-    </ng-container>
-
-    <ng-container *ngIf="column !== 'id' && column !== 'avatar' && column !== 'hobbies'">
-      {{ item[column] }}
-    </ng-container>
+<tr>
+  <td class="w-[5%] px-2 py-3 text-center">
+    <input type="checkbox" class="checkbox checkbox-sm" [(ngModel)]="item.selected" />
   </td>
-</ng-container>
-<td class="text-center">
-  <div class="inline-flex items-center gap-2">
-    <button
-      class="text-muted-foreground hover:bg-card hover:text-foreground flex h-7 w-7 items-center justify-center rounded-md"
-      (click)="onViewClick()">
-      <svg-icon src="./assets/icons/heroicons/outline/eye.svg" [svgClass]="'h-4 w-4'"></svg-icon>
-    </button>
-    <button
-      class="text-muted-foreground hover:bg-card hover:text-foreground flex h-7 w-7 items-center justify-center rounded-md"
-      (click)="onEditClick()">
-      <svg-icon src="./assets/icons/heroicons/outline/pen.svg" [svgClass]="'h-4 w-4'"></svg-icon>
-    </button>
-    <button
-      class="text-muted-foreground hover:bg-card hover:text-foreground flex h-7 w-7 items-center justify-center rounded-md"
-      (click)="onDeleteClick()">
-      <svg-icon src="./assets/icons/heroicons/outline/x.svg" [svgClass]="'h-4 w-4'"></svg-icon>
-    </button>
-  </div>
-</td>
+  @for (column of columns; track column.key) {
+    <td class="px-2 py-3 text-left" [style.width]="column.width || (100 / columns.length) + '%'">
+      {{ item[column.key] }}
+    </td>
+  }
+  <td class="w-[15%] px-2 py-3 text-center">
+    <div class="inline-flex items-center gap-2">
+      <button class="text-muted-foreground hover:bg-card hover:text-foreground flex h-7 w-7 items-center justify-center rounded-md" (click)="onViewClick()">
+        <svg-icon src="./assets/icons/heroicons/outline/eye.svg" [svgClass]="'h-4 w-4'"></svg-icon>
+      </button>
+      <button class="text-muted-foreground hover:bg-card hover:text-foreground flex h-7 w-7 items-center justify-center rounded-md" (click)="onEditClick()">
+        <svg-icon src="./assets/icons/heroicons/outline/pen.svg" [svgClass]="'h-4 w-4'"></svg-icon>
+      </button>
+      <button class="text-muted-foreground hover:bg-card hover:text-foreground flex h-7 w-7 items-center justify-center rounded-md" (click)="onDeleteClick()">
+        <svg-icon src="./assets/icons/heroicons/outline/x.svg" [svgClass]="'h-4 w-4'"></svg-icon>
+      </button>
+    </div>
+  </td>
+</tr>
