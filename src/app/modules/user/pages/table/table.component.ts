@@ -8,10 +8,11 @@ import { TableActionComponent } from './components/table-action/table-action.com
 import { TableFooterComponent } from './components/table-footer/table-footer.component';
 import { TableHeaderComponent } from './components/table-header/table-header.component';
 import { TableRowComponent } from './components/table-row/table-row.component';
-import { User } from '../../models/user.model';
+
 import { TableFilterService } from './services/table-filter.service';
 import { UserService } from '../../services/user.service';
 import { ButtonComponent } from 'src/app/shared/components/button/button.component';
+import { User } from '../../models/user.model';
 
 
 @Component({
@@ -81,16 +82,17 @@ export class TableComponent implements OnInit {
     this.router.navigate(['/users/create']);
   }
 
-  public viewUser(userId: number): void {
+  public viewUser(userId: string): void {
     this.router.navigate(['/users/view', userId]);
   }
 
-  public editUser(userId: number): void {
+  public editUser(userId: string): void {
     this.router.navigate(['/users/update', userId]);
   }
 
+
   // CRUD operations
-  public deleteUser(userId: number): void {
+  public deleteUser(userId: string): void {
     Swal.fire({
       title: '¿Estás seguro?',
       text: 'Esta acción no se puede deshacer',

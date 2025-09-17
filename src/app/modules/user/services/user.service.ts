@@ -23,7 +23,7 @@ export class UserService {
     return this.http.put<User>(`${environment.url_ms_security}/users/${theUser._id}`, theUser);
   }
 
-  delete(id: number) {
+  delete(id: string) {
     return this.http.delete<User>(`${environment.url_ms_security}/users/${id}`);
   }
 

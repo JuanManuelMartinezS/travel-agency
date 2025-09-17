@@ -24,6 +24,12 @@ const routes: Routes = [
     component: LayoutComponent,
     loadChildren: () => import('../role/role.module').then((m) => m.RoleModule),
   },
+    {
+    path: 'user-roles', // Ruta separada para user-roles
+    component: LayoutComponent,
+    loadChildren: () => import('../user-role/user-role.module').then((m) => m.UserRoleModule),
+  },
+
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: '**', redirectTo: 'error/404' },
 

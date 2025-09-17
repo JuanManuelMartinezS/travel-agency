@@ -48,9 +48,9 @@
         <tbody>
           @for (user of filteredUsers(); track user._id) {
             <tr class="hover:bg-card/50" app-table-row [user]="user" 
-                (onEdit)="editUser(user._id || 0)"
-                (onView)="viewUser(user._id || 0)"
-                (onDelete)="deleteUser(user._id || 0)"></tr>
+                (onEdit)="editUser(user._id || '')"
+                (onView)="viewUser(user._id || '')"
+                (onDelete)="deleteUser(user._id|| '')"></tr>
           } @empty {
             <tr>
               <td class="py-8 text-center text-sm" colspan="7">

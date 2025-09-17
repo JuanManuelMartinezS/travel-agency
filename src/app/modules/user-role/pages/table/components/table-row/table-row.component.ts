@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, HostListener, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AngularSvgIconModule } from 'angular-svg-icon';
@@ -16,8 +16,9 @@ export class TableRowComponent {
   @Output() onEdit = new EventEmitter<string>();
   @Output() onView = new EventEmitter<string>();
   @Output() onDelete = new EventEmitter<string>();
-  @Output() onSelectionChange = new EventEmitter<{ user: User, selected: boolean }>();
-  private router = inject(Router);
+  @Output() onSelectionChange = new EventEmitter<{user: User, selected: boolean}>();
+  router = Router;
+
   showActionsMenu = false;
 
   // Close menu when clicking outside
@@ -58,16 +59,7 @@ export class TableRowComponent {
       this.onDelete.emit(this.user._id);
     }
   }
-  viewRoles(event: Event): void {
-    event.preventDefault();
-    if (this.user._id) {
-      console.log('Navigating to roles for user ID:', this.user._id);
-      console.log( this.router.navigate(['table/roles/by-user', this.user._id]))
-      this.router.navigate(['/users/table/roles/by-user', this.user._id]);
-    }
 
-
-  }
   onSelectionsChange(): void {
     this.onSelectionChange.emit({
       user: this.user,

@@ -1,0 +1,203 @@
+<!-- Header Section -->
+<div class="mb-4 flex justify-between">
+  <div class="inline-block">
+    <!-- Título dinámico según el tipo de tabla -->
+    <h3 class="text-foreground font-semibold">
+      @switch (tableType()) {
+        @case ('users') { Usuarios del Sistema }
+        @case ('roles') { Roles del Sistema }
+        @case ('users-by-role') { Usuarios con este Rol }
+        @case ('roles-by-user') { Roles del Usuario }
+      }
+    </h3>
+    
+    <!-- Navegación entre vistas -->
+    <div class="flex items-center space-x-3 mb-2">
+      <button 
+        class="px-3 py-1 text-xs font-medium rounded-md transition-colors"
+       
+        (click)="navigateToUsers()">
+        Usuarios
+      </button>
+      
+      <button class="px-3 py-1 text-xs font-medium rounded-md transition-colors" (click)="navigateToRoles()">
+        Roles
+      </button>
+    </div>
+
+    <!-- Breadcrumb para vistas filtradas -->
+    @if (tableType() === 'users-by-role' || tableType() === 'roles-by-user') {
+      <div class="flex items-center space-x-2 text-xs text-muted-foreground mb-2">
+        <button 
+          (click)="tableType() === 'users-by-role' ? navigateToRoles() : navigateToUsers()"
+          class="hover:text-primary underline">
+          {{ tableType() === 'users-by-role' ? 'Roles' : 'Usuarios' }}
+        </button>
+        <span>></span>
+        <span>{{ pageTitle() }}</span>
+      </div>
+    }
+    
+    <!-- Contador dinámico -->
+    <div class="text-muted-foreground space-x-1 text-xs font-medium">
+      @switch (tableType()) {
+        @case ('users') {
+          <span class="hover:text-primary">Total de Usuarios:</span>
+          <span class="text-foreground">{{ users().length }}</span>
+          @if (filteredUsers().length !== users().length) {
+            <span class="text-muted-foreground">•</span>
+            <span class="hover:text-primary">Filtrados:</span>
+            <span class="text-foreground">{{ filteredUsers().length }}</span>
+          }
+        }
+        @case ('roles') {
+          <span class="hover:text-primary">Total de Roles:</span>
+          <span class="text-foreground">{{ roles().length }}</span>
+          @if (filteredRoles().length !== roles().length) {
+            <span class="text-muted-foreground">•</span>
+            <span class="hover:text-primary">Filtrados:</span>
+            <span class="text-foreground">{{ filteredRoles().length }}</span>
+          }
+        }
+        @case ('users-by-role') {
+          <span class="hover:text-primary">Usuarios en este Rol:</span>
+          <span class="text-foreground">{{ users().length }}</span>
+        }
+        @case ('roles-by-user') {
+          <span class="hover:text-primary">Roles del Usuario:</span>
+          <span class="text-foreground">{{ userRoles().length }}</span>
+        }
+      }
+    </div>
+  </div>
+  
+  <div class="inline-block space-x-4">
+    <app-button
+      impact="light"
+      tone="light"
+      size="small"
+      (buttonClick)="importCSV()">
+      Importar CSV
+    </app-button>
+  </div>
+</div>
+
+<!-- Loading State -->
+@if (loading()) {
+  <div class="border-muted/20 bg-background flex min-w-full flex-col rounded-xl border p-8">
+    <div class="flex items-center justify-center">
+      <div class="text-muted-foreground text-sm">
+        @switch (tableType()) {
+          @case ('users') { Cargando usuarios... }
+          @case ('roles') { Cargando roles... }
+          @case ('users-by-role') { Cargando usuarios del rol... }
+          @case ('roles-by-user') { Cargando roles del usuario... }
+        }
+      </div>
+    </div>
+  </div>
+} @else {
+  <!-- Table Container -->
+  <div class="border-muted/20 bg-background flex min-w-full flex-col rounded-xl border p-2">
+    <app-table-action></app-table-action>
+    <div class="scrollbar-thumb-rounded scrollbar-track-rounded scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted grow overflow-x-auto px-5">
+      <table class="text-muted-foreground table w-full table-auto border-collapse border-0 text-left align-middle leading-5">
+        
+        <!-- TABLA DE USUARIOS -->
+        @if (tableType() === 'users' || tableType() === 'users-by-role') {
+          <thead class="border-muted/20 text-muted-foreground border text-xs">
+            <tr app-table-header (onCheck)="toggleItems($event)">
+              <!-- Tus headers existentes para usuarios -->
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of filteredUsers(); track user._id) {
+              <tr class="hover:bg-card/50" 
+                  app-table-row 
+                  [user]="user" 
+                  (onViewRoles)="viewRolesByUser(user._id!)">
+                <!-- Agregar botón para ver roles en el componente table-row -->
+              </tr>
+            } @empty {
+              <tr>
+                <td class="py-8 text-center text-sm" colspan="7">
+                  <div class="flex flex-col items-center space-y-2">
+                    <div class="text-muted-foreground">
+                      @if (tableType() === 'users-by-role') {
+                        No hay usuarios asignados a este rol
+                      } @else {
+                        No se encontraron usuarios
+                      }
+                    </div>
+                    <app-button
+                      impact="light"
+                      tone="primary"
+                      size="small"
+                      (buttonClick)="assignRoleToUser(currentUserId, currentRoleId)">
+                      @if (tableType() === 'users-by-role') {
+                        Asignar primer usuario
+                      } @else {
+                        Crear primer usuario
+                      }
+                    </app-button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        }
+
+        <!-- TABLA DE ROLES POR USUARIO -->
+        @if (tableType() === 'roles-by-user') {
+          <thead class="border-muted/20 text-muted-foreground border text-xs">
+            <tr>
+              <th class="p-2 font-normal">Rol id</th>
+              <th class="p-2 font-normal">Nombre del rol</th>
+              <th class="p-2 font-normal">  Descripcion del rol</th>
+              <th class="p-2 font-normal">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (userRole of userRoles(); track userRole._id) {
+              <tr class="hover:bg-card/50">
+                <td class="p-2">
+                  <div class="font-medium text-foreground">{{ userRole.role?._id }}</div>
+                </td>
+                <td class="p-2">
+                  <div class="font-medium text-foreground">{{ userRole.role?.name }}</div>
+                </td>
+                <td class="p-2">
+                  <div class="text-sm">{{ userRole.role?.description || 'Sin descripción' }}</div>
+                </td>
+                
+                <td class="p-2">
+                  <button 
+                    class="text-destructive hover:underline text-sm"
+                    (click)="removeRoleFromUser(userRole.user._id!, userRole.role._id!)">
+                    Remover
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td class="py-8 text-center text-sm" colspan="4">
+                  <div class="flex flex-col items-center space-y-2">
+                    <div class="text-muted-foreground">Este usuario no tiene roles asignados</div>
+                    <app-button
+                      impact="light"
+                      tone="primary"
+                      size="small"
+                      (buttonClick)="assignRoleToUser(currentUserId, currentRoleId)">
+                      Asignar primer rol
+                    </app-button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        }
+      </table>
+    </div>
+    <app-table-footer></app-table-footer>
+  </div>
+}

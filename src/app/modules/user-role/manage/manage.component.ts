@@ -1,11 +1,10 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { User } from '../models/user.model';
-import { UserService } from '../services/user.service';
+import { UserRole } from '../models/user-role.model';
+import { UserRoleService } from '../services/user-role.service';
 import Swal from 'sweetalert2';
 import { ButtonComponent } from 'src/app/shared/components/button/button.component';
-
 
 @Component({
   selector: 'app-manage',
@@ -16,13 +15,17 @@ import { ButtonComponent } from 'src/app/shared/components/button/button.compone
 })
 export class ManageComponent implements OnInit {
   mode = signal<number>(1); // 1: view, 2: create, 3: update
-  user = signal<User>({ _id: "" });
+  userRole = signal<UserRole>({ 
+    _id: '', 
+    user: { _id: "", name: "", email: "" }, 
+    role: { _id: "", name: "", description: "" } 
+  });
   theFormGroup: FormGroup;
   trySend = signal<boolean>(false);
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private userService: UserService,
+    private userRoleService: UserRoleService,
     private router: Router,
     private theFormBuilder: FormBuilder
   ) {
@@ -44,33 +47,32 @@ export class ManageComponent implements OnInit {
     this.updateFormValidators();
 
     if (this.activatedRoute.snapshot.params['id']) {
-      console.log('Route has ID parameter', this.activatedRoute.snapshot.params['id']);
-      const userId = this.activatedRoute.snapshot.params['id'];
-      this.user.update(user => ({ ...user, _id: userId }));
-      this.getUser(userId);
-      console.log('User ID from route:', userId);
-      console.log('Current mode:', this.mode());
-      console.log('User:', this.user());
+      const userRoleId = this.activatedRoute.snapshot.params['id'];
+      this.getUserRole(userRoleId);
     }
   }
 
   private configFormGroup(): FormGroup {
     return this.theFormBuilder.group({
-      _id: [0],
-      name: ['', [Validators.required, Validators.minLength(2)]],
-      email: ['', [Validators.required, Validators.email]],
-      password: [''],
-  
+      userId: ['', [Validators.required]],
+      roleId: ['', [Validators.required]]
     });
   }
 
-  private getPasswordValidators() {
-    if (this.mode() === 2) { // Create mode - password required
-      return [Validators.required, Validators.minLength(6)];
-    } else if (this.mode() === 3) { // Update mode - password optional
-      return [Validators.minLength(6)];
+  private updateFormValidators(): void {
+    // Para UserRole, las validaciones son las mismas en todos los modos
+    const userIdControl = this.theFormGroup.get('userId');
+    const roleIdControl = this.theFormGroup.get('roleId');
+    
+    if (userIdControl && roleIdControl) {
+      if (this.mode() === 1) { // View mode - disable controls
+        userIdControl.disable();
+        roleIdControl.disable();
+      } else { // Create/Update mode - enable controls
+        userIdControl.enable();
+        roleIdControl.enable();
+      }
     }
-    return []; // View mode - no validation
   }
 
   getTheFormGroup() {
@@ -78,6 +80,14 @@ export class ManageComponent implements OnInit {
   }
 
   // Helper methods for form validation
+  get userIdControl(): AbstractControl | null {
+    return this.theFormGroup.get('userId');
+  }
+
+  get roleIdControl(): AbstractControl | null {
+    return this.theFormGroup.get('roleId');
+  }
+    // Helper methods for form validation
   get nameControl(): AbstractControl | null {
     return this.theFormGroup.get('name');
   }
@@ -90,25 +100,24 @@ export class ManageComponent implements OnInit {
     return this.theFormGroup.get('password');
   }
 
-  getUser(_id: number): void {
-    this.userService.view(_id).subscribe({
+
+  getUserRole(id: string): void {
+    this.userRoleService.viewById(id).subscribe({
       next: (response) => {
-        this.user.set(response);
+        this.userRole.set(response);
         
         this.theFormGroup.patchValue({
-          _id: response._id,
-          name: response.name || '',
-          email: response.email || '',
-          password: response.password || '', 
+          userId: response.user._id,
+          roleId: response.role._id
         });
         
-        console.log('User fetched successfully:', response);
+        console.log('UserRole fetched successfully:', response);
       },
       error: (error) => {
-        console.error('Error fetching user:', error);
+        console.error('Error fetching userRole:', error);
         Swal.fire({
           title: 'Error!',
-          text: 'Error al cargar la información del usuario.',
+          text: 'Error al cargar la información de la relación usuario-rol.',
           icon: 'error',
         });
       }
@@ -116,7 +125,7 @@ export class ManageComponent implements OnInit {
   }
 
   back(): void {
-    this.router.navigate(['/users/table']);
+    this.router.navigate(['/user-roles/table']);
   }
 
   create(): void {
@@ -130,24 +139,23 @@ export class ManageComponent implements OnInit {
       return;
     }
 
-    const userData = { ...this.theFormGroup.value };
-    delete userData._id; // Remove ID for creation
+    const { userId, roleId } = this.theFormGroup.value;
 
-    this.userService.create(userData).subscribe({
-      next: (user) => {
-        console.log('User created successfully:', user);
+    this.userRoleService.create(userId, roleId).subscribe({
+      next: (userRole) => {
+        console.log('UserRole created successfully:', userRole);
         Swal.fire({
           title: 'Creado!',
-          text: 'Usuario creado correctamente.',
+          text: 'Relación usuario-rol creada correctamente.',
           icon: 'success',
         });
-        this.router.navigate(['/users/table']);
+        this.router.navigate(['/user-roles/table']);
       },
       error: (error) => {
-        console.error('Error creating user:', error);
+        console.error('Error creating userRole:', error);
         Swal.fire({
           title: 'Error!',
-          text: 'Error al crear el usuario.',
+          text: 'Error al crear la relación usuario-rol.',
           icon: 'error',
         });
       }
@@ -165,41 +173,41 @@ export class ManageComponent implements OnInit {
       return;
     }
 
-    const userData = { ...this.theFormGroup.value };
-    
-    // If password is empty in update mode, remove it from the data
-    if (!userData.password || userData.password.trim() === '') {
-      delete userData.password;
-    }
+    const { userId, roleId } = this.theFormGroup.value;
+    const currentId = this.userRole()._id;
 
-    this.userService.update(userData).subscribe({
-      next: (user) => {
-        console.log('User updated successfully:', user);
-        Swal.fire({
-          title: 'Actualizado!',
-          text: 'Usuario actualizado correctamente.',
-          icon: 'success',
+    // Primero eliminar la relación existente y luego crear la nueva
+    this.userRoleService.delete(currentId || '').subscribe({
+      next: () => {
+        this.userRoleService.create(userId, roleId).subscribe({
+          next: (userRole) => {
+            console.log('UserRole updated successfully:', userRole);
+            Swal.fire({
+              title: 'Actualizado!',
+              text: 'Relación usuario-rol actualizada correctamente.',
+              icon: 'success',
+            });
+            this.router.navigate(['/user-roles/table']);
+          },
+          error: (error) => {
+            console.error('Error updating userRole:', error);
+            Swal.fire({
+              title: 'Error!',
+              text: 'Error al actualizar la relación usuario-rol.',
+              icon: 'error',
+            });
+          }
         });
-        this.router.navigate(['/users/table']);
       },
       error: (error) => {
-        console.error('Error updating user:', error);
+        console.error('Error deleting old userRole:', error);
         Swal.fire({
           title: 'Error!',
-          text: 'Error al actualizar el usuario.',
+          text: 'Error al actualizar la relación usuario-rol.',
           icon: 'error',
         });
       }
     });
-  }
-
-  // Method to update form validators when mode changes
-  private updateFormValidators(): void {
-    const passwordControl = this.theFormGroup.get('password');
-    if (passwordControl) {
-      passwordControl.setValidators(this.getPasswordValidators());
-      passwordControl.updateValueAndValidity();
-    }
   }
 
   // Computed properties for template access
