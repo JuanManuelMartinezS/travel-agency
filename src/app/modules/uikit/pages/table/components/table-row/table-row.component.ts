@@ -50,7 +50,7 @@ export class TableRowComponent {
   }
 
   onEditClick(): void {
-    this.view.emit(this.item);
+    this.edit.emit(this.item);
     this.showActionsMenu = false;
   }
   

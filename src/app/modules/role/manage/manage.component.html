@@ -1,0 +1,141 @@
+<!-- Page header -->
+<div class="mb-8">
+  <div class="flex items-center justify-between">
+    <div>
+      @if (mode() === 1) {
+        <h1 class="text-foreground text-2xl font-semibold">Detalle del Rol</h1>
+        <p class="text-muted-foreground text-sm mt-1">Ver información detallada del rol</p>
+      } @else if (mode() === 2) {
+        <h1 class="text-foreground text-2xl font-semibold">Crear Rol</h1>
+        <p class="text-muted-foreground text-sm mt-1">Agregar un nuevo rol al sistema</p>
+      } @else if (mode() === 3) {
+        <h1 class="text-foreground text-2xl font-semibold">Actualizar Rol</h1>
+        <p class="text-muted-foreground text-sm mt-1">Modificar información del rol</p>
+      }
+    </div>
+    <div>
+      <app-button 
+        impact="light" 
+        tone="light" 
+        (buttonClick)="back()">
+        Volver al listado
+      </app-button>
+    </div>
+  </div>
+</div>
+
+<!-- Form card -->
+<div class="border-muted/20 bg-background rounded-xl border p-6">
+  <form class="space-y-6" [formGroup]="theFormGroup">
+    
+    <!-- ID Field (solo visible en modo view y update) -->
+    @if (!isCreateMode()) {
+      <div class="space-y-2">
+        <label class="text-foreground text-sm font-medium">ID</label>
+        <input 
+          type="text" 
+          class="bg-background border-muted/20 text-foreground placeholder-muted-foreground w-full rounded-lg border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          [value]="role()?._id || ''"
+          disabled
+        >
+      </div>
+    }
+
+    <!-- Name Field -->
+    <div class="space-y-2">
+      <label class="text-foreground text-sm font-medium">
+        Nombre <span class="text-destructive">*</span>
+      </label>
+      <input 
+        type="text" 
+        class="bg-background border-muted/20 text-foreground placeholder-muted-foreground w-full rounded-lg border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+        [disabled]="isViewMode()" 
+        formControlName="name"
+        placeholder="Ingrese el nombre del rol"
+      >
+      @if (nameControl?.errors && (nameControl?.dirty || nameControl?.touched || trySend())) {
+        <div class="text-destructive text-xs space-y-1">
+          @if (nameControl?.errors?.['required']) {
+            <div>El nombre es requerido</div>
+          }
+          @if (nameControl?.errors?.['minlength']) {
+            <div>El nombre debe tener al menos 2 caracteres</div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Description Field -->
+    <div class="space-y-2">
+      <label class="text-foreground text-sm font-medium">
+        Descripción <span class="text-destructive">*</span>
+      </label>
+      <input 
+        type="text" 
+        class="bg-background border-muted/20 text-foreground placeholder-muted-foreground w-full rounded-lg border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+        [disabled]="isViewMode()" 
+        formControlName="description"
+        placeholder="Ingrese la descripción del rol"
+      >
+      @if (descriptionControl?.errors && (descriptionControl?.dirty || descriptionControl?.touched || trySend())) {
+        <div class="text-destructive text-xs space-y-1">
+          @if (descriptionControl?.errors?.['required']) {
+            <div>La descripción es requerida</div>
+          }
+          @if (descriptionControl?.errors?.['description']) {
+            <div>Formato de descripción erronea</div>
+          }
+        </div>
+      }
+    </div>
+    <!-- Additional fields can be added here -->
+
+    <!-- Action buttons -->
+    <div class="pt-6 border-t border-muted/20">
+      <div class="flex gap-3 justify-end">
+        <!-- View mode button -->
+        @if (isViewMode()) {
+          <app-button 
+            impact="bold" 
+            tone="primary" 
+            (buttonClick)="back()">
+            Regresar
+          </app-button>
+        }
+
+        <!-- Create mode buttons -->
+        @if (isCreateMode()) {
+          <app-button 
+            impact="light" 
+            tone="light" 
+            (buttonClick)="back()">
+            Cancelar
+          </app-button>
+          <app-button 
+            impact="bold" 
+            tone="success" 
+            (buttonClick)="create()">
+            Crear Rol
+          </app-button>
+        }
+
+        <!-- Update mode buttons -->
+        @if (isUpdateMode()) {
+          <app-button 
+            impact="light" 
+            tone="light" 
+            (buttonClick)="back()">
+            Cancelar
+          </app-button>
+          <app-button 
+            impact="bold" 
+            tone="warning" 
+            (buttonClick)="update()">
+            Actualizar Rol
+          </app-button>
+        }
+      </div>
+    </div>
+
+  </form>
+</div>

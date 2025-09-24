@@ -148,7 +148,7 @@ export class ManageComponentUR implements OnInit {
   }
   getRoleName(roleId: string): string {
     const role = this.roles().find((r) => r._id === roleId);
-    return role ? role.name : 'Rol no encontrado';
+    return role?.name ??  'Rol no encontrado';
   }
   getSelectedRoleIds(): string[] {
     const selectedRoles: string[] = [];

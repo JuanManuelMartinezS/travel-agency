@@ -14,7 +14,7 @@ import { ButtonComponent } from 'src/app/shared/components/button/button.compone
   templateUrl: './manage.component.html',
   styleUrls: ['./manage.component.css']
 })
-export class ManageComponent implements OnInit {
+export class  ManageComponent implements OnInit {
   mode = signal<number>(1); // 1: view, 2: create, 3: update
   user = signal<User>({ _id: "" });
   theFormGroup: FormGroup;

@@ -10,6 +10,8 @@ import { TableFooterComponent } from 'src/app/modules/uikit/pages/table/componen
 import { RoleService } from '../../services/role.service';
 import { Role } from '../../models/role.model';
 import { TableFilterService } from 'src/app/modules/uikit/pages/table/services/table-filter.service';
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-roles-view',
@@ -36,7 +38,8 @@ export class RolesViewComponent implements OnInit {
 
   constructor(
     private roleService: RoleService,
-    private filterService: TableFilterService
+    private filterService: TableFilterService,
+    private router: Router
   ) 
   {}
 
@@ -51,34 +54,47 @@ export class RolesViewComponent implements OnInit {
       },
     });
   }
+
+  // Metodo para manejar el create
+  onCreateRole() {
+    console.log('Funciono, el rol para crear');
+    this.router.navigate(['/roles/create']);
+  }
+
   // Metodo para manejar el view
   onViewRole(role: Role) {
-    console.log('Funciono, el rol:', role);
-
-    // Implementar
+    console.log('Funciono, el rol para ver');
+    this.router.navigate(['/roles/view', role._id]);
   }
 
   // Metodo para manejar el edit
   onEditRole(role: Role) {
-    console.log('Funciono, el rol:', role);
-    // Implementar también con el create
+    console.log('Funciono, el rol para editar:', role);
+    this.router.navigate(['/roles/update', role._id]);
   }
 
   // Metodo para manejar evento de delete de la tabla
   onDeleteRole(role: Role) {
-    console.log('Funciono, el rol:', role);
-    if (confirm(`Esta seguro de eliminar el rol: ${role.name}?`)) {
-      if (role._id) {
-        this.roleService.delete(role._id).subscribe({
-          next: () => {
-            console.log('Role deleted successfully');
-            // Actualizar la lista local
-            this.allRoles.update((currentRoles) => currentRoles.filter((r) => r._id !== role._id!));
-          },
-          error: (err) => console.error('Error deleting role', err),
-        });
-      }
-    }
+    Swal.fire({
+          title: '¿Estás seguro?',
+          text: 'Esta acción no se puede deshacer',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#DC2626',
+          cancelButtonColor: '#6B7280',
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar',
+        }).then((result) => {
+          if (result.isConfirmed && role._id) {
+            this.roleService.delete(role._id).subscribe({
+              next: () => {
+                console.log('Role deleted successfully');
+                // Actualizar la lista local
+                this.allRoles.update((currentRoles) => currentRoles.filter((r) => r._id !== role._id!));
+              },
+              error: (err) => console.error('Error deleting role', err),
+              });
+          }});
   }
   
   // Utilizar un computed signal para filtrar y paginar paginas
@@ -88,8 +104,9 @@ export class RolesViewComponent implements OnInit {
 
     // Aplicar filtro completo a la lista de objetos
     const filtered = this.allRoles().filter(role => 
-      !searchTerm || role.name.toLowerCase().includes(searchTerm)
-      || role.description.toLowerCase().includes(searchTerm)
+      !searchTerm ||
+      (role.name && role.name.toLowerCase().includes(searchTerm)) ||
+      (role.description && role.description.toLowerCase().includes(searchTerm))
     );
 
     // Aplicar paginacion a la lista filtrada
