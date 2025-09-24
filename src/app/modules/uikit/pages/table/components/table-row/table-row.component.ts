@@ -10,15 +10,14 @@ import { CommonModule } from '@angular/common';
   styleUrl: './table-row.component.css',
 })
 export class TableRowComponent {
-  @Input() title: string = ''; // Titulo 
-  @Input() item: any = {};  // Cualquier entidad
-  @Input() columns: { key: string, label: string, width?: string }[] = []; // Las columnas con sus cosas definidas
+  @Input() title: string = ''; // Titulo
+  @Input() item: any = {}; // Cualquier entidad
+  @Input() columns: { key: string; label: string; width?: string }[] = []; // Las columnas con sus cosas definidas
 
   // Emitir el evento
   @Output() delete = new EventEmitter<any>();
   @Output() view = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();
-
 
   // Control booleano para la visibilidad del menu de acciones
   showActionsMenu = false;
@@ -53,6 +52,12 @@ export class TableRowComponent {
     this.edit.emit(this.item);
     this.showActionsMenu = false;
   }
-  
+  // Función para obtener valores anidados de un objeto usando una ruta de claves (ej: 'user.name')
+  getNestedValue(obj: any, path: string): any {
+    if (!obj || !path) {
+      return null;
+    }
+    return path.split('.').reduce((current, key) => (current && current[key] !== undefined ? current[key] : null), obj);
+  }
   constructor() {}
 }

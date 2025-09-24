@@ -60,11 +60,12 @@ export class Menu {
           label: 'Security',
           route: '/security',
           children: [
-            {label: 'Users', route: '/users'},
-            {label: 'Roles', route: '/roles'}
+            { label: 'Users', route: '/users' },
+            { label: 'Roles', route: '/roles' },
+            { label: 'Sessions', route: '/sessions' },
             // Meter el resto de entidades de seguridad
-          ]
-        }
+          ],
+        },
       ],
     },
     {
