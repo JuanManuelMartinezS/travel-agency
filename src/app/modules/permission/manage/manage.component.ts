@@ -18,6 +18,7 @@ export class ManageComponent implements OnInit {
   permission = signal<Permission>({ _id: "" });
   theFormGroup: FormGroup;
   trySend = signal<boolean>(false);
+  methods = ['GET', 'POST', 'PUT', 'DELETE'];
 
   constructor(
     private activatedRoute: ActivatedRoute,
