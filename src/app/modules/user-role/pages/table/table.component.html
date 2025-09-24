@@ -11,20 +11,6 @@
       }
     </h3>
     
-    <!-- Navegación entre vistas -->
-    <div class="flex items-center space-x-3 mb-2">
-      <button 
-        class="px-3 py-1 text-xs font-medium rounded-md transition-colors"
-       
-        (click)="navigateToUsers()">
-        Usuarios
-      </button>
-      
-      <button class="px-3 py-1 text-xs font-medium rounded-md transition-colors" (click)="navigateToRoles()">
-        Roles
-      </button>
-    </div>
-
     <!-- Breadcrumb para vistas filtradas -->
     @if (tableType() === 'users-by-role' || tableType() === 'roles-by-user') {
       <div class="flex items-center space-x-2 text-xs text-muted-foreground mb-2">
@@ -71,13 +57,20 @@
     </div>
   </div>
   
-  <div class="inline-block space-x-4">
+ <div class="inline-block space-x-4">
     <app-button
       impact="light"
       tone="light"
       size="small"
       (buttonClick)="importCSV()">
       Importar CSV
+    </app-button>
+    <app-button
+      impact="bold"
+      tone="primary"
+      (buttonClick)="createRoleByUser(currentUserId)"
+      >
+      Agregar rol
     </app-button>
   </div>
 </div>
@@ -183,13 +176,7 @@
                 <td class="py-8 text-center text-sm" colspan="4">
                   <div class="flex flex-col items-center space-y-2">
                     <div class="text-muted-foreground">Este usuario no tiene roles asignados</div>
-                    <app-button
-                      impact="light"
-                      tone="primary"
-                      size="small"
-                      (buttonClick)="assignRoleToUser(currentUserId, currentRoleId)">
-                      Asignar primer rol
-                    </app-button>
+
                   </div>
                 </td>
               </tr>
