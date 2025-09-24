@@ -38,11 +38,11 @@ export class TableUserRoleComponent implements OnInit {
   roles = signal<Role[]>([]);
   userRoles = signal<UserRole[]>([]);
   loading = signal<boolean>(true);
-  
+
   // Configuración de la tabla
   tableType = signal<'users' | 'roles' | 'users-by-role' | 'roles-by-user'>('users');
-  currentRoleId = signal<string>("");
-  currentUserId = signal<string>("");
+  currentRoleId: string = '';
+  currentUserId: string = '';
   pageTitle = signal<string>('Usuarios');
 
   constructor(
@@ -51,23 +51,23 @@ export class TableUserRoleComponent implements OnInit {
     private userRoleService: UserRoleService,
     private filterService: TableFilterService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
     // Determinar el tipo de tabla desde la ruta
-    this.route.data.subscribe(data => {
+    this.route.data.subscribe((data) => {
       this.tableType.set(data['type'] || 'users');
       this.updatePageTitle();
     });
 
     // Obtener parámetros de la ruta
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe((params) => {
       if (params['roleId']) {
-        this.currentRoleId.set(params['roleId']);
+        this.currentRoleId = params['roleId'] as string;
       }
       if (params['userId']) {
-        this.currentUserId.set(params['userId']);
+        this.currentUserId = params['userId'] as string;
       }
     });
 
@@ -76,17 +76,17 @@ export class TableUserRoleComponent implements OnInit {
 
   private updatePageTitle(): void {
     const titles = {
-      'users': 'Usuarios',
-      'roles': 'Roles',
+      users: 'Usuarios',
+      roles: 'Roles',
       'users-by-role': 'Usuarios por Rol',
-      'roles-by-user': 'Roles del Usuario'
+      'roles-by-user': 'Roles del Usuario',
     };
     this.pageTitle.set(titles[this.tableType()]);
   }
 
   public loadData(): void {
     this.loading.set(true);
-    
+
     switch (this.tableType()) {
       case 'users':
         this.loadUsers();
@@ -112,7 +112,7 @@ export class TableUserRoleComponent implements OnInit {
       error: (error) => {
         this.loading.set(false);
         this.handleRequestError(error, 'Error al cargar los usuarios.');
-      }
+      },
     });
   }
 
@@ -125,64 +125,64 @@ export class TableUserRoleComponent implements OnInit {
       error: (error) => {
         this.loading.set(false);
         this.handleRequestError(error, 'Error al cargar los roles.');
-      }
+      },
     });
   }
 
   private loadUsersByRole(): void {
-    const roleId = this.currentRoleId();
+    const roleId = this.currentRoleId;
     if (!roleId) return;
 
     this.userRoleService.viewByRoleId(roleId).subscribe({
       next: (userRoles) => {
         // Extraer usuarios de las relaciones user-role
-        const userIds = userRoles.map(ur => ur._id);
+        const userIds = userRoles.map((ur) => ur._id);
         this.loadUsersFromIds(userIds);
       },
       error: (error) => {
         this.loading.set(false);
         this.handleRequestError(error, 'Error al cargar usuarios del rol.');
-      }
+      },
     });
   }
 
-private loadRolesByUser(): void {
-  const userId = this.currentUserId();
-  if (!userId) return;
+  private loadRolesByUser(): void {
+    const userId = this.currentUserId;
+    if (!userId) return;
 
-  this.userRoleService.viewByUserId(userId).subscribe({
-    next: (userRoles) => {
-      // La API retorna un array de UserRole, no un solo objeto
-      this.userRoles.set(userRoles);
-      this.loading.set(false);
-      console.log('Roles del usuario:', this.userRoles());
-    },
-    error: (error) => {
-      this.loading.set(false);
-      this.handleRequestError(error, 'Error al cargar roles del usuario.');
-    }
-  });
-}
+    this.userRoleService.viewByUserId(userId).subscribe({
+      next: (userRoles) => {
+        // La API retorna un array de UserRole, no un solo objeto
+        this.userRoles.set(userRoles);
+        this.loading.set(false);
+        console.log('Roles del usuario:', this.userRoles());
+      },
+      error: (error) => {
+        this.loading.set(false);
+        this.handleRequestError(error, 'Error al cargar roles del usuario.');
+      },
+    });
+  }
 
   private loadUsersFromIds(userIds: (string | undefined)[]): void {
     // Implementar método para cargar usuarios específicos por IDs
     // Esto depende de si tu API soporta consultas por múltiples IDs
     this.userService.list().subscribe({
       next: (allUsers) => {
-        const filteredUsers = allUsers.filter(user => userIds.includes(user._id!));
+        const filteredUsers = allUsers.filter((user) => userIds.includes(user._id!));
         this.users.set(filteredUsers);
         this.loading.set(false);
       },
       error: (error) => {
         this.loading.set(false);
         this.handleRequestError(error, 'Error al cargar usuarios.');
-      }
+      },
     });
   }
 
   // MÉTODOS DE NAVEGACIÓN ENTRE TABLAS
   public navigateToUsers(): void {
-    this.router.navigate(['/users/table/users']);
+    this.router.navigate(['/users/table']);
   }
 
   public navigateToRoles(): void {
@@ -195,6 +195,9 @@ private loadRolesByUser(): void {
 
   public viewRolesByUser(userId: string): void {
     this.router.navigate(['/users/table/roles/by-user', userId]);
+  }
+  public createRoleByUser(userId: string): void {
+    this.router.navigate(['/users/table/roles/by-user', userId, 'create']);
   }
 
   // MÉTODOS EXISTENTES ACTUALIZADOS
@@ -222,10 +225,8 @@ private loadRolesByUser(): void {
     });
   }
 
-  
-
   // MÉTODOS PARA GESTIÓN DE RELACIONES USER-ROLE
-  public assignRoleToUser(userId: WritableSignal<string>, roleId: WritableSignal<string>): void {
+  public assignRoleToUser(userId: string, roleId: string): void {
     this.userRoleService.create(userId, roleId).subscribe({
       next: () => {
         toast.success('Rol asignado correctamente');
@@ -233,7 +234,7 @@ private loadRolesByUser(): void {
       },
       error: (error) => {
         toast.error('Error al asignar rol', { description: error.message });
-      }
+      },
     });
   }
 
@@ -256,7 +257,7 @@ private loadRolesByUser(): void {
           },
           error: (error) => {
             toast.error('Error al remover rol', { description: error.message });
-          }
+          },
         });
       }
     });
@@ -267,10 +268,7 @@ private loadRolesByUser(): void {
     const search = this.filterService.searchField().toLowerCase();
     return this.users().filter((user) => {
       if (!search) return true;
-      return (
-        user.name?.toLowerCase().includes(search) ||
-        user.email?.toLowerCase().includes(search)
-      );
+      return user.name?.toLowerCase().includes(search) || user.email?.toLowerCase().includes(search);
     });
   });
 
@@ -284,11 +282,11 @@ private loadRolesByUser(): void {
 
   // Getters para el template
   get selectedUsersCount(): number {
-    return this.users().filter(user => user.selected).length;
+    return this.users().filter((user) => user.selected).length;
   }
 
   get selectedRolesCount(): number {
-    return this.roles().filter(role => role.selected).length;
+    return this.roles().filter((role) => role.selected).length;
   }
 
   get hasSelectedUsers(): boolean {
@@ -305,14 +303,14 @@ private loadRolesByUser(): void {
   }
 
   public exportCSV(): void {
-    const csvData = this.tableType() === 'users' || this.tableType() === 'users-by-role' 
-      ? this.convertUsersToCSV(this.users())
-      : this.convertRolesToCSV(this.roles());
-    
-    const filename = this.tableType() === 'users' || this.tableType() === 'users-by-role' 
-      ? 'usuarios.csv' 
-      : 'roles.csv';
-    
+    const csvData =
+      this.tableType() === 'users' || this.tableType() === 'users-by-role'
+        ? this.convertUsersToCSV(this.users())
+        : this.convertRolesToCSV(this.roles());
+
+    const filename =
+      this.tableType() === 'users' || this.tableType() === 'users-by-role' ? 'usuarios.csv' : 'roles.csv';
+
     this.downloadCSV(csvData, filename);
     toast.success('Datos exportados correctamente');
   }
@@ -321,11 +319,7 @@ private loadRolesByUser(): void {
     const headers = ['ID', 'Nombre', 'Email'];
     const csvContent = [
       headers.join(','),
-      ...users.map(user => [
-        user._id || '',
-        user.name || '',
-        user.email || ''
-      ].join(','))
+      ...users.map((user) => [user._id || '', user.name || '', user.email || ''].join(',')),
     ];
     return csvContent.join('\n');
   }
@@ -334,11 +328,7 @@ private loadRolesByUser(): void {
     const headers = ['ID', 'Nombre', 'Descripción'];
     const csvContent = [
       headers.join(','),
-      ...roles.map(role => [
-        role._id || '',
-        role.name || '',
-        role.description || ''
-      ].join(','))
+      ...roles.map((role) => [role._id || '', role.name || '', role.description || ''].join(',')),
     ];
     return csvContent.join('\n');
   }
@@ -347,7 +337,7 @@ private loadRolesByUser(): void {
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
-    
+
     link.setAttribute('href', url);
     link.setAttribute('download', filename);
     link.style.visibility = 'hidden';
