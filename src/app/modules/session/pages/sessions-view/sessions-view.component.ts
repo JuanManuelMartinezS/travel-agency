@@ -100,7 +100,6 @@ export class SessionsViewComponent implements OnInit {
     const startIndex = (this.currentPage() - 1) * this.itemsPerPage();
     const endIndex = startIndex + this.itemsPerPage();
 
-    console.log('Filtered', filtered);
     // Se devuelve un objeto con la lista paginada y el total de elementos filtrados
     return {
       paginated: filtered.slice(startIndex, endIndex),
