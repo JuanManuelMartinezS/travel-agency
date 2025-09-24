@@ -1,13 +1,15 @@
 <tr>
-  <th class="w-[5%] px-2 py-3 text-center">
-    <input
-      type="checkbox"
-      class="checkbox checkbox-sm"
-      (change)="toggle($event)"
-    />
-  </th>
   @for (column of columns; track column.key) {
-    <th class="px-2 py-3 text-left" [style.width]="column.width || (100 / columns.length) + '%'">{{ column.label }}</th>
+    <th 
+      class="px-2 py-3 text-left" 
+      [style.width]="column.width"
+      [ngClass]="{ 'text-center': column.key === 'select' || column.key === 'actions' }"
+    >
+      @if (column.key === 'select') {
+        <input type="checkbox" class="checkbox checkbox-sm" (change)="toggle($event)" />
+      } @else {
+        {{ column.label }}
+      }
+    </th>
   }
-  <th class="w-[15%] px-2 py-3 text-center">Acciones</th>
 </tr>

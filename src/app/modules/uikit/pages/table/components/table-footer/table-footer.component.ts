@@ -19,22 +19,58 @@ export class TableFooterComponent {
   @Output() pageChange = new EventEmitter<number>();
   @Output() itemsPerPageChange = new EventEmitter<number>();
 
-  // Metodo para manejar el evento de cambio de pagina
-  goToPage(pageNumber: number): void {
-    if (pageNumber > 0 && pageNumber <= this.totalPages()) {
-      this.pageChange.emit(pageNumber);
+
+  // Array para generar las opciones del select
+  perPageOptions = [5, 10, 20, 30, 50];
+
+  // Variables para la lógica interna
+  totalPages: number = 0;
+
+  ngOnChanges(): void {
+    // Recalcula las páginas cuando cambian los inputs
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+  }
+
+  // Método para cambiar de página
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.pageChange.emit(page);
     }
   }
-
-  // Calcular el numero total de paginas
-  totalPages(): number {
-    return Math.ceil(this.totalItems / this.itemsPerPage);
+  // Método para cambiar la cantidad de elementos por página
+  onItemsPerPageChange(event: Event): void {
+    const value = +(event.target as HTMLSelectElement).value;
+    this.itemsPerPageChange.emit(value);
   }
 
-  // Calcular el rango de los items mostrados
-  get currentRange(): string {
-    const start = (this.currentPage - 1) * this.itemsPerPage + 1;
-    const end = Math.min(this.currentPage * this.itemsPerPage, this.totalItems);
-    return `${start}-${end} of ${this.totalItems}`
+  min(a: number, b: number): number {
+    return Math.min(a, b);
+  }
+
+  getPages(): number[] {
+    const pages: number[] = [];   // Muestra 1,2,3,...,n
+    // Muestra siempre la primera página
+    pages.push(1);
+    
+    // Muestra páginas alrededor de la actual si hay muchas
+    if (this.totalPages > 1) {
+      let start = Math.max(2, this.currentPage - 1);
+      let end = Math.min(this.totalPages - 1, this.currentPage + 1);
+      if (this.currentPage > 3) {
+        pages.push(0); // Representa "..."
+      }
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+      if (this.currentPage < this.totalPages - 2) {
+        pages.push(0); // Representa "..."
+      }
+      // Muestra siempre la última página si no es la primera
+      if (this.totalPages !== 1) {
+        pages.push(this.totalPages);
+      }
+    }
+    return pages;
   }
 }
+

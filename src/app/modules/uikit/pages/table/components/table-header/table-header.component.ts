@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common'; // Asegúrate de importar esto
 })
 export class TableHeaderComponent {
   // Recibir array con nombres de las columnas
-  @Input() columns: { key: string, label: string, width?: string }[] = [];;
+  @Input() columns: { key: string, label: string, width?: string }[] = [];
 
   // Emite el evento de selección al padre
   @Output() onCheck = new EventEmitter<boolean>();

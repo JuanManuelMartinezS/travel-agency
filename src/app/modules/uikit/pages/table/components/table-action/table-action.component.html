@@ -1,5 +1,5 @@
 <div class="flex flex-wrap items-center justify-between gap-2 py-3 px-5">
-  <h3 class="text-muted-foreground text-sm font-medium"></h3>
+  <h3 class="text-muted-foreground text-sm font-medium">{{title}}</h3>
   <div class="flex flex-wrap gap-2">
     <div class="flex">
       <label class="text-muted-foreground relative">
@@ -9,25 +9,26 @@
         <input
           name="search"
           class="py-2 pl-8 pr-2"
-          placeholder="Search users"
+          [placeholder]="searchPlaceholder"
           type="text"
           value=""
-          (input)="onSearchChange($event)" />
+          [(ngModel)]="filterService.searchField" />
       </label>
     </div>
     <div class="flex flex-wrap gap-2.5">
+      <!-- IMPORTANTE SI QUEREMOS METER LAS OTRAS COSAS : LO DE ALL Y NEWEST ES AQUI-->
       <!-- Generar el select de forma dinamica -->
-      <select name="status" class="text-muted-foreground w-28! p-2" (change)="onStatusChange($event)">
+      <!-- <select name="status" class="text-muted-foreground w-28! p-2" (change)="onStatusChange($event)">
         @for (option of statusOptions; track $index) {
           <option [value]="option.value">{{ option.label }}</option>
         }
-      </select>
+      </select> -->
       <!-- Generar el order en forma dinamica-->
-      <select name="order" class="text-muted-foreground w-28! p-2" (change)="onOrderChange($event)">
+      <!-- <select name="order" class="text-muted-foreground w-28! p-2" (change)="onOrderChange($event)">
         @for (option of orderOptions; track $index) {
           <option [value]="option.value">{{ option.label }}</option>
         }
-      </select>
+      </select> -->
     </div>
   </div>
 </div>

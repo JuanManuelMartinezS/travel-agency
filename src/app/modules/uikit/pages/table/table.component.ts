@@ -1,11 +1,10 @@
 import { Component, Input, Output} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AngularSvgIconModule } from 'angular-svg-icon';
-import { TableActionComponent } from './components/table-action/table-action.component';
-import { TableFooterComponent } from './components/table-footer/table-footer.component';
 import { TableHeaderComponent } from './components/table-header/table-header.component';
 import { TableRowComponent } from './components/table-row/table-row.component';
 import { EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-table',
@@ -13,9 +12,8 @@ import { EventEmitter } from '@angular/core';
     AngularSvgIconModule,
     FormsModule,
     TableHeaderComponent,
-    TableFooterComponent,
     TableRowComponent,
-    TableActionComponent,
+    CommonModule
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.css',
