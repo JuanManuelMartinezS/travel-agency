@@ -62,6 +62,7 @@ export class Menu {
           children: [
             { label: 'Users', route: '/users' },
             { label: 'Roles', route: '/roles' },
+            { label: 'Permissions', route: '/permissions' },
             { label: 'Sessions', route: '/sessions' },
             // Meter el resto de entidades de seguridad
           ],

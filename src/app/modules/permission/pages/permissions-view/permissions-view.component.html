@@ -1,0 +1,40 @@
+<div class="mb-4 flex justify-between">
+  <div class="inline-block">
+    <h3 class="text-foreground font-semibold">Permissions List</h3>
+    <div class="text-muted-foreground space-x-1 text-xs font-medium">
+      <span class="text-foreground">Total Permissions: {{ allPermissions().length }}</span>
+    </div>
+  </div>
+  <div class="inline-block space-x-4">
+    <button 
+      class="bg-primary text-primary-foreground flex-none rounded-md px-4 py-2.5 text-xs font-semibold"
+      (click)="onCreatePermission()">
+        Add Permission
+    </button>
+  </div>
+</div>
+<div class="border-muted/20 bg-background flex min-w-full flex-col rounded-xl border p-2">
+  <app-table-action
+    [searchPlaceholder]="'Search permissions...'"
+    [title]="'Tabla de Permisos'">
+  </app-table-action>
+
+  <app-table
+    [data]="filteredAndPaginatedPermissions().paginated"
+    [columns]="columns"
+    [title]="'Permission'"
+    (deleteRow)="onDeletePermission($event)"
+    (viewRow)="onViewPermission($event)"
+    (editRow)="onEditPermission($event)"
+    (toggleAllRows)="onToggleAllRows($event)">
+  </app-table>
+
+  <app-table-footer
+    [totalItems]="filteredAndPaginatedPermissions().totalFiltered"
+    [itemsPerPage]="itemsPerPage()"
+    [currentPage]="currentPage()"
+    (pageChange)="onPageChange($event)"
+    (itemsPerPageChange)="onItemsPerPageChange($event)">
+  </app-table-footer>
+</div>
+

@@ -24,6 +24,11 @@ const routes: Routes = [
     loadChildren: () => import('../role/role.module').then((m) => m.RoleModule),
   },
   {
+    path: 'permissions',
+    component: LayoutComponent,
+    loadChildren: () => import('../permission/permission.module').then((m) => m.PermissionModule),
+  },
+  {
     path: 'user-roles', // Ruta separada para user-roles
     component: LayoutComponent,
     loadChildren: () => import('../user-role/user-role.module').then((m) => m.UserRoleModule),
