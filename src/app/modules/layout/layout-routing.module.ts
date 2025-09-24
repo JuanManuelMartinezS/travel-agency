@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LayoutComponent } from './layout.component';
 
-
 const routes: Routes = [
   {
     path: 'dashboard',
@@ -24,19 +23,23 @@ const routes: Routes = [
     component: LayoutComponent,
     loadChildren: () => import('../role/role.module').then((m) => m.RoleModule),
   },
-    {
+  {
     path: 'user-roles', // Ruta separada para user-roles
     component: LayoutComponent,
     loadChildren: () => import('../user-role/user-role.module').then((m) => m.UserRoleModule),
   },
+  {
+    path: 'sessions', // Ruta separada para user-roles
+    component: LayoutComponent,
+    loadChildren: () => import('../session/session.module').then((m) => m.SessionModule),
+  },
 
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: '**', redirectTo: 'error/404' },
-
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class LayoutRoutingModule { }
+export class LayoutRoutingModule {}

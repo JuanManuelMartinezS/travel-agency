@@ -1,42 +1,44 @@
 <tr>
   @for (column of columns; track column.key) {
-    <td 
-      class="px-2 py-3 text-left" 
-      [style.width]="column.width"
-      [ngClass]="{ 'text-center': column.key === 'select' || column.key === 'actions' }"
-    >
-      @if (column.key === 'select') {
-        <input type="checkbox" class="checkbox checkbox-sm" [(ngModel)]="item.selected" />
-      } @else if (column.key === 'actions') {
-        <div class="inline-flex items-center gap-2 relative" data-actions-menu>
-          <button 
-            (click)="toggleActionsMenu($event)"
-            class="text-muted-foreground hover:bg-card hover:text-foreground flex h-7 w-7 items-center justify-center rounded-md">
-             <svg-icon src="./assets/icons/heroicons/outline/ellipsis-vertical.svg" [svgClass]="'h-4 w-4'"></svg-icon>
+  <td
+    class="px-2 py-3 text-left"
+    [style.width]="column.width"
+    [ngClass]="{ 'text-center': column.key === 'select' || column.key === 'actions' }">
+    @if (column.key === 'select') {
+    <input type="checkbox" class="checkbox checkbox-sm" [(ngModel)]="item.selected" />
+    } @else if (column.key === 'actions') {
+    <div class="relative inline-flex items-center gap-2" data-actions-menu>
+      <button
+        (click)="toggleActionsMenu($event)"
+        class="text-muted-foreground hover:bg-card hover:text-foreground flex h-7 w-7 items-center justify-center rounded-md">
+        <svg-icon src="./assets/icons/heroicons/outline/ellipsis-vertical.svg" [svgClass]="'h-4 w-4'"></svg-icon>
+      </button>
+      @if (showActionsMenu) {
+      <div class="border-muted/20 bg-background absolute right-0 top-8 z-50 w-48 rounded-md border shadow-lg">
+        <div class="py-1">
+          <button
+            (click)="onViewClick()"
+            class="text-muted-foreground hover:bg-card hover:text-foreground flex w-full items-center px-4 py-2 text-sm">
+            Ver {{ title }}
           </button>
-          @if (showActionsMenu) {
-            <div class="absolute right-0 top-8 z-50 w-48 rounded-md border border-muted/20 bg-background shadow-lg">
-              <div class="py-1">
-                <button (click)="onViewClick()"
-                  class="flex w-full items-center px-4 py-2 text-sm text-muted-foreground hover:bg-card hover:text-foreground">
-                  Ver {{title}}
-                </button>
-                <button (click)="onEditClick()"
-                  class="flex w-full items-center px-4 py-2 text-sm text-muted-foreground hover:bg-card hover:text-foreground">
-                    Editar {{title}}
-                </button>
-                <hr class="my-1 border-muted/20">
-                <button (click)="onDeleteClick()"
-                  class="flex w-full items-center px-4 py-2 text-sm text-destructive hover:bg-destructive/10">
-                    Eliminar {{title}}
-                </button>
-              </div>
-            </div>
-          }
+          <button
+            (click)="onEditClick()"
+            class="text-muted-foreground hover:bg-card hover:text-foreground flex w-full items-center px-4 py-2 text-sm">
+            Editar {{ title }}
+          </button>
+          <hr class="border-muted/20 my-1" />
+          <button
+            (click)="onDeleteClick()"
+            class="text-destructive hover:bg-destructive/10 flex w-full items-center px-4 py-2 text-sm">
+            Eliminar {{ title }}
+          </button>
         </div>
-      } @else {
-        {{ item[column.key] }}
+      </div>
       }
-    </td>
+    </div>
+    } @else {
+    {{ getNestedValue(item, column.key) }}
+    }
+  </td>
   }
 </tr>
