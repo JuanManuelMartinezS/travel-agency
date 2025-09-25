@@ -10,6 +10,7 @@ import { TableFooterComponent } from 'src/app/modules/uikit/pages/table/componen
 import { SessionService } from '../../services/session-service.service';
 import { Session } from '../../models/session.model';
 import { TableFilterService } from 'src/app/modules/uikit/pages/table/services/table-filter.service';
+import { TableAction } from 'src/app/modules/uikit/pages/table/components/table-row/table-row.component';
 
 @Component({
   selector: 'app-sessions-view',
@@ -37,6 +38,13 @@ export class SessionsViewComponent implements OnInit {
     { key: 'actions', label: '', width: '50px' },
   ];
 
+  // Definir las acciones disponibles en la tabla
+  actions: TableAction[] = [
+    { label: 'Ver', action: 'view' },
+    { label: 'Editar', action: 'edit' },
+    { label: 'Eliminar', action: 'delete' }
+  ];
+
   constructor(private sessionService: SessionService, private filterService: TableFilterService) {}
 
   ngOnInit(): void {
@@ -49,6 +57,24 @@ export class SessionsViewComponent implements OnInit {
         console.error('Error fetching sessions:', error);
       },
     });
+  }
+
+  // Cuando le dan click a una acción (botón del table-row)
+  onActionClicked(event: { action: string; item: any }): void {
+    const { action, item } = event;
+    switch (action) {
+      case 'view':
+        this.onViewSession(item);
+        break;
+      case 'edit':
+        this.onEditSession(item);
+        break;
+      case 'delete':
+        this.onDeleteSession(item);
+        break;
+      default:
+        console.warn(`Acción desconocida: ${action}`);
+    }
   }
 
   // Método para manejar el view

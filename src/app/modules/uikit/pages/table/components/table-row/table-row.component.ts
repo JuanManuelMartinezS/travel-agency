@@ -3,6 +3,11 @@ import { FormsModule } from '@angular/forms';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { CommonModule } from '@angular/common';
 
+export interface TableAction {
+  label: string;
+  action: 'view' | 'edit' | 'delete' | 'custom' | 'permissions';
+}
+
 @Component({
   selector: '[app-table-row]',
   imports: [FormsModule, AngularSvgIconModule, CommonModule],
@@ -14,10 +19,11 @@ export class TableRowComponent {
   @Input() item: any = {}; // Cualquier entidad
   @Input() columns: { key: string; label: string; width?: string }[] = []; // Las columnas con sus cosas definidas
 
+  // Nuevo input para los botones dinamicos
+  @Input() actions: TableAction[] = [];
+
   // Emitir el evento
-  @Output() delete = new EventEmitter<any>();
-  @Output() view = new EventEmitter<any>();
-  @Output() edit = new EventEmitter<any>();
+  @Output() actionClicked = new EventEmitter<{ action: string; item: any }>();
 
   // Control booleano para la visibilidad del menu de acciones
   showActionsMenu = false;
@@ -37,21 +43,11 @@ export class TableRowComponent {
     this.showActionsMenu = !this.showActionsMenu;
   }
 
-  onDeleteClick(): void {
-    // Se emite el item que el usuario quiere eliminar
-    this.delete.emit(this.item);
+  onActionClick(actionType: string): void {
+    this.actionClicked.emit({ action: actionType, item: this.item });
     this.showActionsMenu = false; // Cerrar menu despues de interración
   }
 
-  onViewClick(): void {
-    this.view.emit(this.item);
-    this.showActionsMenu = false;
-  }
-
-  onEditClick(): void {
-    this.edit.emit(this.item);
-    this.showActionsMenu = false;
-  }
   // Función para obtener valores anidados de un objeto usando una ruta de claves (ej: 'user.name')
   getNestedValue(obj: any, path: string): any {
     if (!obj || !path) {

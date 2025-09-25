@@ -12,6 +12,7 @@ import { Permission } from '../../models/permission.model';
 import { TableFilterService } from 'src/app/modules/uikit/pages/table/services/table-filter.service';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { TableAction } from 'src/app/modules/uikit/pages/table/components/table-row/table-row.component';
 
 @Component({
   selector: 'app-permissions-view',
@@ -37,6 +38,13 @@ export class PermissionsViewComponent implements OnInit {
     {key: 'actions', label: '', width: '50px'},
   ]; 
 
+  // Definir las acciones disponibles en la tabla
+  actions: TableAction[] = [
+    { label: 'Ver', action: 'view' },
+    { label: 'Editar', action: 'edit' },
+    { label: 'Eliminar', action: 'delete' }
+  ];
+
   constructor(
     private permissionService: PermissionService,
     private filterService: TableFilterService,
@@ -60,6 +68,24 @@ export class PermissionsViewComponent implements OnInit {
   onCreatePermission() {
     console.log('Funciono, el permiso para ver');
     this.router.navigate(['/permissions/create']);
+  }
+
+  // Cuando le dan click a una acción (botón del table-row)
+  onActionClicked(event: { action: string; item: any }): void {
+    const { action, item } = event;
+    switch (action) {
+      case 'view':
+        this.onViewPermission(item);
+        break;
+      case 'edit':
+        this.onEditPermission(item);
+        break;
+      case 'delete':
+        this.onDeletePermission(item);
+        break;
+      default:
+        console.warn(`Acción desconocida: ${action}`);
+    }
   }
 
   // Metodo para manejar el view

@@ -17,10 +17,9 @@
   <app-table
     [data]="filteredAndPaginatedSessions().paginated"
     [columns]="columns"
+    [actions]="actions"
     [title]="'Sesión'"
-    (deleteRow)="onDeleteSession($event)"
-    (viewRow)="onViewSession($event)"
-    (editRow)="onEditSession($event)"
+    (actionClicked)="onActionClicked($event)"
     (toggleAllRows)="onToggleAllRows($event)">
   </app-table>
 

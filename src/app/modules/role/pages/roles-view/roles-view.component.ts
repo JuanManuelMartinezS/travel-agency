@@ -12,6 +12,7 @@ import { Role } from '../../models/role.model';
 import { TableFilterService } from 'src/app/modules/uikit/pages/table/services/table-filter.service';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { TableAction } from 'src/app/modules/uikit/pages/table/components/table-row/table-row.component';
 
 @Component({
   selector: 'app-roles-view',
@@ -35,6 +36,14 @@ export class RolesViewComponent implements OnInit {
     {key: 'description', label: 'Description', width: '300px'},
     {key: 'actions', label: '', width: '50px'},
   ]; 
+  
+  // Definir las acciones disponibles en la tabla
+  actions: TableAction[] = [
+    { label: 'Ver', action: 'view' },
+    { label: 'Editar', action: 'edit' },
+    { label: 'Eliminar', action: 'delete' },
+    { label: 'Permisos x', action: 'permissions' },
+  ];
 
   constructor(
     private roleService: RoleService,
@@ -59,6 +68,27 @@ export class RolesViewComponent implements OnInit {
   onCreateRole() {
     console.log('Funciono, el rol para crear');
     this.router.navigate(['/roles/create']);
+  }
+
+  // Cuando le dan click a una acción (botón del table-row)
+  onActionClicked(event: { action: string; item: any }): void {
+    const { action, item } = event;
+    switch (action) {
+      case 'view':
+        this.onViewRole(item);
+        break;
+      case 'edit':
+        this.onEditRole(item);
+        break;
+      case 'delete':
+        this.onDeleteRole(item);
+        break;
+      case 'permissions':
+        this.router.navigate([`/roles/permissions`, item._id]);
+        break;
+      default:
+        console.warn(`Acción desconocida: ${action}`);
+    }
   }
 
   // Metodo para manejar el view

@@ -22,10 +22,9 @@
   <app-table
     [data]="filteredAndPaginatedRoles().paginated"
     [columns]="columns"
+    [actions]="actions"
     [title]="'Rol'"
-    (deleteRow)="onDeleteRole($event)"
-    (viewRow)="onViewRole($event)"
-    (editRow)="onEditRole($event)"
+    (actionClicked)="onActionClicked($event)"
     (toggleAllRows)="onToggleAllRows($event)">
   </app-table>
 

@@ -16,22 +16,13 @@
       @if (showActionsMenu) {
       <div class="border-muted/20 bg-background absolute right-0 top-8 z-50 w-48 rounded-md border shadow-lg">
         <div class="py-1">
-          <button
-            (click)="onViewClick()"
-            class="text-muted-foreground hover:bg-card hover:text-foreground flex w-full items-center px-4 py-2 text-sm">
-            Ver {{ title }}
-          </button>
-          <button
-            (click)="onEditClick()"
-            class="text-muted-foreground hover:bg-card hover:text-foreground flex w-full items-center px-4 py-2 text-sm">
-            Editar {{ title }}
-          </button>
-          <hr class="border-muted/20 my-1" />
-          <button
-            (click)="onDeleteClick()"
-            class="text-destructive hover:bg-destructive/10 flex w-full items-center px-4 py-2 text-sm">
-            Eliminar {{ title }}
-          </button>
+          @for (action of actions; track action.label) {
+            <button
+              (click)="onActionClick(action.action)"
+              class="text-muted-foreground hover:bg-card hover:text-foreground flex w-full items-center px-4 py-2 text-sm">
+              {{ action.label }} {{ title }}
+            </button>
+          }
         </div>
       </div>
       }

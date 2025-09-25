@@ -22,10 +22,9 @@
   <app-table
     [data]="filteredAndPaginatedPermissions().paginated"
     [columns]="columns"
+    [actions]="actions"
     [title]="'Permission'"
-    (deleteRow)="onDeletePermission($event)"
-    (viewRow)="onViewPermission($event)"
-    (editRow)="onEditPermission($event)"
+    (actionClicked)="onActionClicked($event)"
     (toggleAllRows)="onToggleAllRows($event)">
   </app-table>
 
