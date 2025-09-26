@@ -1,0 +1,90 @@
+<div class="p-6 md:p-12 bg-background min-h-screen font-sans text-foreground">
+  <div class="bg-card rounded-xl p-6 shadow-md mb-6">
+    <h1 class="text-3xl md:text-4xl font-bold tracking-tight">
+      {{ currentRole()?.name }} - Permissions
+    </h1>
+    <p class="text-muted-foreground mt-2">
+      Manage the permissions assigned to this role.
+    </p>
+  </div>
+  
+  <div class="bg-card rounded-xl shadow-md overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-muted text-muted-foreground border-b border-border">
+        <tr>
+          <th class="px-6 py-4 text-left font-semibold">Model</th>
+          <th class="px-6 py-4 text-center font-semibold">View</th>
+          <th class="px-6 py-4 text-center font-semibold">List</th>
+          <th class="px-6 py-4 text-center font-semibold">Create</th>
+          <th class="px-6 py-4 text-center font-semibold">Update</th>
+          <th class="px-6 py-4 text-center font-semibold">Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (modelEntry of permissionsByModel() | keyvalue; track modelEntry.key) {
+          <tr class="border-b border-border last:border-b-0 hover:bg-muted/50 transition-colors">
+            <td class="px-6 py-4 font-medium whitespace-nowrap">{{ modelEntry.key }}</td>
+            <td class="px-6 py-4 text-center">
+                @if (modelEntry.value['View']) {
+                    <input 
+                      type="checkbox" 
+                      class="scale-125 checkbox checkbox-primary"
+                      [(ngModel)]="modelEntry.value['View'].has_permission"
+                      (change)="onPermissionChange(modelEntry.value['View'])"
+                    />
+                }
+            </td>
+            <td class="px-6 py-4 text-center">
+              @if (modelEntry.value['List']) {
+                <input 
+                  type="checkbox" 
+                  class="scale-125 checkbox checkbox-primary"
+                  [(ngModel)]="modelEntry.value['List'].has_permission"
+                  (change)="onPermissionChange(modelEntry.value['List'])"
+                />
+              }
+            </td>
+            <td class="px-6 py-4 text-center">
+              @if (modelEntry.value['Create']) {
+                <input 
+                  type="checkbox" 
+                  class="scale-125 checkbox checkbox-primary"
+                  [(ngModel)]="modelEntry.value['Create'].has_permission"
+                  (change)="onPermissionChange(modelEntry.value['Create'])"
+                />
+              }
+            </td>
+            <td class="px-6 py-4 text-center">
+              @if (modelEntry.value['Update']) {
+                <input 
+                  type="checkbox" 
+                  class="scale-125 checkbox checkbox-primary"
+                  [(ngModel)]="modelEntry.value['Update'].has_permission"
+                  (change)="onPermissionChange(modelEntry.value['Update'])"
+                />
+              }
+            </td>
+            <td class="px-6 py-4 text-center">
+              @if (modelEntry.value['Delete']) {
+                <input 
+                  type="checkbox" 
+                  class="scale-125 checkbox checkbox-primary"
+                  [(ngModel)]="modelEntry.value['Delete'].has_permission"
+                  (change)="onPermissionChange(modelEntry.value['Delete'])"
+                />
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <div class="mt-4 flex justify-end gap-2">
+    <app-button 
+      impact="bold" 
+      tone="primary" 
+      (buttonClick)="back()">
+      Volver
+    </app-button>
+  </div>
+</div>

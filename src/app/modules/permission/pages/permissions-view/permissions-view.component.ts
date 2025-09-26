@@ -1,5 +1,5 @@
-import { Component, OnInit, signal,computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit, signal,computed } from '@angular/core';
 
 // Partes reutilizables de la tabla
 import { TableComponent } from 'src/app/modules/uikit/pages/table/table.component';
@@ -7,22 +7,22 @@ import { TableActionComponent } from 'src/app/modules/uikit/pages/table/componen
 import { TableFooterComponent } from 'src/app/modules/uikit/pages/table/components/table-footer/table-footer.component';
 
 // Modelo y servicios
-import { RoleService } from '../../services/role.service';
-import { Role } from '../../models/role.model';
+import { PermissionService } from '../../services/permission.service';
+import { Permission } from '../../models/permission.model';
 import { TableFilterService } from 'src/app/modules/uikit/pages/table/services/table-filter.service';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { TableAction } from 'src/app/modules/uikit/pages/table/components/table-row/table-row.component';
 
 @Component({
-  selector: 'app-roles-view',
+  selector: 'app-permissions-view',
   imports: [CommonModule, TableComponent, TableActionComponent, TableFooterComponent],
-  templateUrl: './roles-view.component.html',
-  styleUrl: './roles-view.component.css',
+  templateUrl: './permissions-view.component.html',
+  styleUrl: './permissions-view.component.css'
 })
-export class RolesViewComponent implements OnInit {
+export class PermissionsViewComponent implements OnInit {
   // Una señal para tener la lista total de roles
-  allRoles = signal<Role[]>([]);
+  allPermissions = signal<Permission[]>([]);
 
   // Variables para las paginas
   currentPage = signal<number>(1);
@@ -32,42 +32,42 @@ export class RolesViewComponent implements OnInit {
   columns = [
     {key: 'select', label: '', width: '50px'},
     {key: '_id', label: 'Id', width: '300px'},
-    {key: 'name', label: 'Name', width: '300px'},
-    {key: 'description', label: 'Description', width: '300px'},
+    {key: 'url', label: 'Url', width: '300px'},
+    {key: 'method', label: 'Method', width: '150px'},
+    {key: 'model', label: 'Model', width: '200px'},
     {key: 'actions', label: '', width: '50px'},
   ]; 
-  
+
   // Definir las acciones disponibles en la tabla
   actions: TableAction[] = [
     { label: 'Ver', action: 'view' },
     { label: 'Editar', action: 'edit' },
-    { label: 'Eliminar', action: 'delete' },
-    { label: 'Permisos x', action: 'permissions' },
+    { label: 'Eliminar', action: 'delete' }
   ];
 
   constructor(
-    private roleService: RoleService,
+    private permissionService: PermissionService,
     private filterService: TableFilterService,
     private router: Router
   ) 
   {}
 
   ngOnInit(): void {
-    // Llamamos la lista de roLes cuando el componente se inicializa
-    this.roleService.list().subscribe({
+    // Llamamos la lista de permisos cuando el componente se inicializa
+    this.permissionService.list().subscribe({
       next: (data) => {
-        this.allRoles.set(data);
+        this.allPermissions.set(data);
       },
       error: (error) => {
-        console.error('Error fetching roles:', error);
+        console.error('Error fetching permissions:', error);
       },
     });
   }
 
   // Metodo para manejar el create
-  onCreateRole() {
-    console.log('Funciono, el rol para crear');
-    this.router.navigate(['/roles/create']);
+  onCreatePermission() {
+    console.log('Funciono, el permiso para ver');
+    this.router.navigate(['/permissions/create']);
   }
 
   // Cuando le dan click a una acción (botón del table-row)
@@ -75,16 +75,13 @@ export class RolesViewComponent implements OnInit {
     const { action, item } = event;
     switch (action) {
       case 'view':
-        this.onViewRole(item);
+        this.onViewPermission(item);
         break;
       case 'edit':
-        this.onEditRole(item);
+        this.onEditPermission(item);
         break;
       case 'delete':
-        this.onDeleteRole(item);
-        break;
-      case 'permissions':
-        this.router.navigate([`/roles/permissions`, item._id]);
+        this.onDeletePermission(item);
         break;
       default:
         console.warn(`Acción desconocida: ${action}`);
@@ -92,19 +89,19 @@ export class RolesViewComponent implements OnInit {
   }
 
   // Metodo para manejar el view
-  onViewRole(role: Role) {
-    console.log('Funciono, el rol para ver');
-    this.router.navigate(['/roles/view', role._id]);
+  onViewPermission(permission: Permission) {
+    console.log('Funciono, el permiso para ver');
+    this.router.navigate(['/permissions/view', permission._id]);
   }
 
   // Metodo para manejar el edit
-  onEditRole(role: Role) {
-    console.log('Funciono, el rol para editar:', role);
-    this.router.navigate(['/roles/update', role._id]);
+  onEditPermission(permission: Permission) {
+    console.log('Funciono, el permiso para editar:', permission);
+    this.router.navigate(['/permissions/update', permission._id]);
   }
 
   // Metodo para manejar evento de delete de la tabla
-  onDeleteRole(role: Role) {
+  onDeletePermission(permission: Permission) {
     Swal.fire({
           title: '¿Estás seguro?',
           text: 'Esta acción no se puede deshacer',
@@ -115,28 +112,29 @@ export class RolesViewComponent implements OnInit {
           confirmButtonText: 'Sí, eliminar',
           cancelButtonText: 'Cancelar',
         }).then((result) => {
-          if (result.isConfirmed && role._id) {
-            this.roleService.delete(role._id).subscribe({
+          if (result.isConfirmed && permission._id) {
+            this.permissionService.delete(permission._id).subscribe({
               next: () => {
-                console.log('Role deleted successfully');
+                console.log('Permission deleted successfully');
                 // Actualizar la lista local
-                this.allRoles.update((currentRoles) => currentRoles.filter((r) => r._id !== role._id!));
+                this.allPermissions.update((currentPermissions) => currentPermissions.filter((r) => r._id !== permission._id!));
               },
-              error: (err) => console.error('Error deleting role', err),
+              error: (err) => console.error('Error deleting permission', err),
               });
           }});
   }
   
   // Utilizar un computed signal para filtrar y paginar paginas
-  filteredAndPaginatedRoles = computed(() => {
+  filteredAndPaginatedPermissions = computed(() => {
     // Obtener el termino de busqueda del servicio
     const searchTerm = this.filterService.searchField().toLowerCase();
 
     // Aplicar filtro completo a la lista de objetos
-    const filtered = this.allRoles().filter(role => 
+    const filtered = this.allPermissions().filter(permission => 
       !searchTerm ||
-      (role.name && role.name.toLowerCase().includes(searchTerm)) ||
-      (role.description && role.description.toLowerCase().includes(searchTerm))
+      (permission.url && permission.url.toLowerCase().includes(searchTerm)) ||
+      (permission.method && permission.method.toLowerCase().includes(searchTerm)) ||
+      (permission.model && permission.model.toLowerCase().includes(searchTerm)) 
     );
 
     // Aplicar paginacion a la lista filtrada
@@ -164,6 +162,6 @@ export class RolesViewComponent implements OnInit {
 
   // Para cuando se seleccionan todas las filas
   onToggleAllRows(checked: boolean): void {
-    this.allRoles.update(roles => roles.map(role => ({ ...role, selected: checked })));
+    this.allPermissions.update(permissions => permissions.map(permission => ({ ...permission, selected: checked })));
   }
 }

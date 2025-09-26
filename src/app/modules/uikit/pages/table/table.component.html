@@ -8,7 +8,7 @@
       </thead>
       <tbody>
         @for (item of data; track $index) {
-        <tr class="hover:bg-card/50" app-table-row [item]="item" [columns]="columns" [title]="title" (delete)="deleteRow.emit($event)" (view)="viewRow.emit($event)" (edit)="editRow.emit($event)"></tr>
+        <tr class="hover:bg-card/50" app-table-row [item]="item" [columns]="columns" [title]="title" [actions]="actions" (actionClicked)="onRowAction($event)"></tr>
         } @empty {
         <tr>
           <td class="py-4 text-center text-sm" colspan="7">No data found</td>
