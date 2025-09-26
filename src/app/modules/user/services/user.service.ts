@@ -5,10 +5,10 @@ import { User } from '../models/user.model';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
   list(): Observable<User[]> {
     return this.http.get<User[]>(`${environment.url_ms_security}/users`);
   }
@@ -17,6 +17,7 @@ export class UserService {
   }
   create(newUser: User): Observable<User> {
     delete newUser._id;
+    console.log('creando usuario');
     return this.http.post<User>(`${environment.url_ms_security}/users`, newUser);
   }
   update(theUser: User): Observable<User> {
@@ -26,5 +27,4 @@ export class UserService {
   delete(id: string) {
     return this.http.delete<User>(`${environment.url_ms_security}/users/${id}`);
   }
-
 }

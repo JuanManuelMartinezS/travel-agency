@@ -5,13 +5,14 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { User } from 'src/app/modules/user/models/user.model';
+import { UserService } from 'src/app/modules/user/services/user.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SecurityService {
   theUser = new BehaviorSubject<User | null>(null);
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private userService: UserService) {
     this.verifyActualSession();
   }
 
@@ -32,10 +33,13 @@ export class SecurityService {
       _id: dataSesion['uid'],
       name: dataSesion['displayName'],
       photoUrl: dataSesion['photoUrl'],
+      email: dataSesion['providerData'][0]['email'],
       password: '',
       //role:dataSesion["user"]["role"],
       token: dataSesion['accessToken'],
     };
+
+    this.userService.create(data);
     localStorage.setItem('sesion', JSON.stringify(data));
     this.setUser(data);
   }
