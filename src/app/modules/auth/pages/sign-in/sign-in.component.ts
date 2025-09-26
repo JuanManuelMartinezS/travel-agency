@@ -51,7 +51,7 @@ export class SignInComponent implements OnInit {
 
   async onSubmit() {
     this.submitted = true;
-    const { email, password, userType } = this.form.value;
+    const { email, password } = this.form.value;
 
     // Stop here if form is invalid
     if (this.form.invalid) {
@@ -62,20 +62,7 @@ export class SignInComponent implements OnInit {
     this.error = '';
 
     try {
-      if (!userType) {
-        throw new Error('Por favor selecciona un tipo de usuario');
-      }
-
       const user = await this._authService.signInWithEmailAndPassword(email, password);
-      const hasData = await this._authService.checkUserRoleData(user, userType);
-
-      if (!hasData) {
-        this.error = 'No tienes datos registrados para este rol. Por favor, contacta con soporte.';
-        return;
-      }
-
-      localStorage.setItem('currentRole', userType);
-      this._router.navigate([`/${userType.replace('s', '')}`]);
     } catch (error: any) {
       console.error('Error en login:', error);
       this.error = error.message || 'Error al iniciar sesión';

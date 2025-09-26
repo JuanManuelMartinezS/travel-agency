@@ -1,14 +1,20 @@
-import { Injectable } from '@angular/core';
+// auth.service.ts - CON REDIRECT
+import { Injectable, inject } from '@angular/core';
 import {
-  signInWithPopup,
-  signInWithEmailAndPassword as firebaseSignIn,
+  signInWithRedirect,
+  getRedirectResult,
+  signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  Auth,
   User,
-} from 'firebase/auth';
+  GoogleAuthProvider,
+  GithubAuthProvider,
+  OAuthProvider,
+} from '@angular/fire/auth';
 
-import { environment } from '../../../environments/environment'; // Ajusta la ruta
-import { auth, githubProvider, googleProvider, microsoftProvider } from 'src/firebase/firebaseconfig';
+import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 const USER_ROLES = {
   CUSTOMER: 'customers',
@@ -20,14 +26,38 @@ const USER_ROLES = {
   providedIn: 'root',
 })
 export class AuthService {
-  private API_URL = environment.url_ms_security; // Usa la URL de tu environment
+  private API_URL = environment.url_ms_security;
+  private auth: Auth = inject(Auth);
+  private router = inject(Router);
 
-  constructor() {}
+  // Providers
+  private googleProvider = new GoogleAuthProvider();
+  private githubProvider = new GithubAuthProvider();
+  private microsoftProvider = new OAuthProvider('microsoft.com');
 
-  // Función para iniciar sesión con email/contraseña
+  constructor() {
+    // Manejar el resultado del redirect después del login
+    this.handleRedirectResult();
+  }
+
+  private async handleRedirectResult() {
+    try {
+      const result = await getRedirectResult(this.auth);
+      if (result?.user) {
+        const userType = localStorage.getItem('pendingUserType');
+        if (userType) {
+          await this.processSocialLoginSuccess(result.user);
+        }
+      }
+    } catch (error) {
+      console.error('Error en redirect result:', error);
+    }
+  }
+
+  // Función para iniciar sesión con email/contraseña (sin cambios)
   async signInWithEmailAndPassword(email: string, password: string): Promise<User> {
     try {
-      const result = await firebaseSignIn(auth, email, password);
+      const result = await signInWithEmailAndPassword(this.auth, email, password);
       return result.user;
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
@@ -35,105 +65,53 @@ export class AuthService {
     }
   }
 
-  // Función para iniciar sesión con Google
-  async signInWithGoogle(): Promise<User> {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      return result.user;
-    } catch (error) {
-      console.error('Error al iniciar sesión con Google:', error);
-      throw error;
-    }
+  // Función para iniciar sesión con Google (REDIRECT)
+  async signInWithGoogle(): Promise<void> {
+    await signInWithRedirect(this.auth, this.googleProvider);
   }
 
-  // Función para iniciar sesión con GitHub
-  async signInWithGitHub(): Promise<User> {
-    try {
-      const result = await signInWithPopup(auth, githubProvider);
-      return result.user;
-    } catch (error) {
-      console.error('Error al iniciar sesión con GitHub:', error);
-      throw error;
-    }
+  // Función para iniciar sesión con GitHub (REDIRECT)
+  async signInWithGitHub(): Promise<void> {
+    await signInWithRedirect(this.auth, this.githubProvider);
   }
 
-  // Función para iniciar sesión con Microsoft
-  async signInWithMicrosoft(): Promise<User> {
-    try {
-      const result = await signInWithPopup(auth, microsoftProvider);
-      return result.user;
-    } catch (error) {
-      console.error('Error al iniciar sesión con Microsoft:', error);
-      throw error;
-    }
+  // Función para iniciar sesión con Microsoft (REDIRECT)
+  async signInWithMicrosoft(): Promise<void> {
+    await signInWithRedirect(this.auth, this.microsoftProvider);
   }
 
-  // Función para verificar si un usuario tiene datos para un rol específico
-  async checkUserRoleData(user: User, role: string): Promise<boolean> {
-    if (!user || !role) {
-      console.error('Usuario o rol no proporcionado');
-      return false;
-    }
-
+  private async processSocialLoginSuccess(user: User) {
     try {
-      const idToken = await user.getIdToken();
-
-      const response = await fetch(`${this.API_URL}/${role}?email=${encodeURIComponent(user.email!)}`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        mode: 'cors',
+      console.log('redirigiendo a das');
+      this.router.navigate([`dashboard/nfts`]);
+    } catch (error) {
+      console.error('Error procesando login social:', error);
+      this.router.navigate(['/auth/sign-in'], {
+        queryParams: { error: 'Error en el proceso de autenticación' },
       });
-
-      if (response.status === 404 || response.status === 500) {
-        console.log(`Error en el endpoint ${role}:`, response.status);
-        return false;
-      }
-
-      if (!response.ok) {
-        console.error(`Error checking ${role} data:`, response.status);
-        return false;
-      }
-
-      const users = await response.json();
-
-      if (!Array.isArray(users) || users.length === 0) {
-        return false;
-      }
-
-      const userData = users.find((u: any) => u.email === user.email);
-      return !!userData;
-    } catch (error) {
-      console.error(`Error checking ${role} data:`, error);
-      return false;
     }
   }
 
-  // Función para cerrar sesión
   async logOut(): Promise<void> {
     try {
-      await signOut(auth);
+      await signOut(this.auth);
+      localStorage.removeItem('currentRole');
+      localStorage.removeItem('pendingUserType');
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
       throw error;
     }
   }
 
-  // Obtener usuario actual
   getCurrentUser(): User | null {
-    return auth.currentUser;
+    return this.auth.currentUser;
   }
 
-  // Observer para cambios en autenticación
   authStateObserver(callback: (user: User | null) => void) {
-    return onAuthStateChanged(auth, callback);
+    return onAuthStateChanged(this.auth, callback);
   }
 
-  // Verificar si está autenticado
   isAuthenticated(): boolean {
-    return !!auth.currentUser;
+    return !!this.auth.currentUser;
   }
 }
