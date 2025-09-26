@@ -89,6 +89,8 @@ export class SignInComponent implements OnInit {
 
     try {
       const user = await loginFunction();
+
+      this._router.navigate([`/dashboard/nfts`]);
     } catch (error: any) {
       console.error('Error en login social:', error);
       this.error = error.message || 'Error en login social';

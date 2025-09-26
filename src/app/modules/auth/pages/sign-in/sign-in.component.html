@@ -1,8 +1,8 @@
-<!-- login form -->
+<!-- sign-in.component.html - CORREGIDO -->
 <form class="my-10 space-y-6" [formGroup]="form" (ngSubmit)="onSubmit()">
   <div class="text-center">
     <h2 class="text-foreground mb-1 text-3xl font-semibold">Hello Again <span class="text-primary">!</span></h2>
-    <p class="text-muted-foreground text-sm">Enter your credential to access your account.</p>
+    <p class="text-muted-foreground text-sm">Enter your credentials to access your account.</p>
   </div>
 
   <!-- Social Login Buttons -->
@@ -11,25 +11,25 @@
       type="button"
       (click)="onGoogleLogin()"
       [disabled]="loading"
-      class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white py-3 px-4 font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50">
+      class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white py-3 px-4 font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50">
       <svg-icon src="assets/icons/google-logo.svg" [svgClass]="'h-5 w-5'"></svg-icon>
-      Continue with Google
+      {{ loading ? 'Connecting...' : 'Continue with Google' }}
     </button>
 
     <button
       type="button"
       (click)="onGitHubLogin()"
       [disabled]="loading"
-      class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-800 bg-gray-900 py-3 px-4 font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50">
-      Continue with GitHub
+      class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-800 bg-gray-900 py-3 px-4 font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50">
+      {{ loading ? 'Connecting...' : 'Continue with GitHub' }}
     </button>
 
     <button
       type="button"
       (click)="onMicrosoftLogin()"
       [disabled]="loading"
-      class="bg-gray flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 py-3 px-4 font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50">
-      Continue with Microsoft
+      class="bg-gray flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 py-3 px-4 font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50">
+      {{ loading ? 'Connecting...' : 'Continue with Microsoft' }}
     </button>
   </div>
 
@@ -38,32 +38,39 @@
     <p class="text-muted-foreground mx-4 mb-0 text-center text-sm">or</p>
   </div>
 
-  <!-- Error Message -->
-  <div *ngIf="error" class="rounded-lg border border-red-200 bg-red-50 p-2 text-center text-sm text-red-600">
-    {{ error }}
-  </div>
-
-  <div class="space-y-3 text-left">
+  <div class="space-y-4 text-left">
     <!-- Email Field -->
     <div class="form-group">
       <div class="relative">
         <input
-          type="text"
+          type="email"
           id="email"
           [class.is-invalid]="submitted && f['email'].errors"
-          class="peer block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [class.border-red-300]="submitted && f['email'].errors"
+          [class.focus:ring-red-500]="submitted && f['email'].errors"
+          [class.focus:border-red-500]="submitted && f['email'].errors"
+          class="peer block w-full rounded-md border border-gray-300 px-3 py-2.5 transition-colors focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder=" "
-          formControlName="email" />
+          formControlName="email"
+          autocomplete="email" />
         <label
           for="email"
           [class.text-red-500]="submitted && f['email'].errors"
-          class="bg-background text-muted-foreground absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform px-2 text-sm duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2">
+          class="bg-background text-muted-foreground absolute top-2.5 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform px-2 text-sm duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2.5 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2">
           Email address
         </label>
       </div>
-      <div *ngIf="submitted && f['email'].errors" class="mt-1 text-sm text-red-500">
-        <div *ngIf="f['email'].errors['required']">Required field</div>
-        <div *ngIf="f['email'].errors['email']">Email must be a valid email address</div>
+
+      <!-- ✅ Mensajes de error mejorados -->
+      <div *ngIf="submitted && f['email'].errors" class="mt-2 text-sm text-red-500">
+        <div *ngIf="f['email'].errors['required']" class="flex items-center gap-1">
+          <span>⚠️</span>
+          Email is required
+        </div>
+        <div *ngIf="f['email'].errors['email']" class="flex items-center gap-1">
+          <span>⚠️</span>
+          Please enter a valid email address
+        </div>
       </div>
     </div>
 
@@ -74,41 +81,63 @@
           [type]="passwordTextType ? 'text' : 'password'"
           id="password"
           [class.is-invalid]="submitted && f['password'].errors"
-          class="peer block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [class.border-red-300]="submitted && f['password'].errors"
+          [class.focus:ring-red-500]="submitted && f['password'].errors"
+          [class.focus:border-red-500]="submitted && f['password'].errors"
+          class="peer block w-full rounded-md border border-gray-300 px-3 py-2.5 pr-12 transition-colors focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder=" "
-          formControlName="password" />
+          formControlName="password"
+          autocomplete="current-password" />
         <label
           for="password"
           [class.text-red-500]="submitted && f['password'].errors"
-          class="bg-background text-muted-foreground absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform px-2 text-sm duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2">
+          class="bg-background text-muted-foreground absolute top-2.5 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform px-2 text-sm duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2.5 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2">
           Password
         </label>
-        <span class="text-muted-foreground absolute top-2 right-3 cursor-pointer" (click)="togglePasswordTextType()">
+
+        <!-- ✅ Botón de toggle mejorado -->
+        <button
+          type="button"
+          class="text-muted-foreground absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer p-1 hover:text-gray-600 focus:outline-none"
+          (click)="togglePasswordTextType()"
+          [attr.aria-label]="passwordTextType ? 'Hide password' : 'Show password'">
           <svg-icon
             [src]="
               passwordTextType ? 'assets/icons/heroicons/outline/eye.svg' : 'assets/icons/heroicons/outline/eye-off.svg'
             "
             [svgClass]="'h-5 w-5'">
           </svg-icon>
-        </span>
+        </button>
       </div>
-      <div *ngIf="submitted && f['password'].errors" class="mt-1 text-sm text-red-500">
-        <div *ngIf="f['password'].errors['required']">Required field</div>
+
+      <!-- ✅ Mensajes de error de contraseña mejorados -->
+      <div *ngIf="submitted && f['password'].errors" class="mt-2 text-sm text-red-500">
+        <div *ngIf="f['password'].errors['required']" class="flex items-center gap-1">
+          <span>⚠️</span>
+          Password is required
+        </div>
+        <div *ngIf="f['password'].errors['minlength']" class="flex items-center gap-1">
+          <span>⚠️</span>
+          Password must be at least 6 characters
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="mb-2 flex items-center justify-between space-x-3">
+  <!-- Remember me & Forgot password -->
+  <div class="flex items-center justify-between">
     <div class="flex items-center">
       <input
         id="remember-me"
         name="remember-me"
         type="checkbox"
         class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-      <label for="remember-me" class="text-muted-foreground ml-2 block text-sm"> Remember me </label>
+      <label for="remember-me" class="text-muted-foreground ml-2 block select-none text-sm"> Remember me </label>
     </div>
 
-    <a routerLink="/auth/forgot-password" class="text-primary hover:text-primary-dark text-sm font-medium">
+    <a
+      routerLink="/auth/forgot-password"
+      class="text-primary hover:text-primary-dark text-sm font-medium hover:underline">
       Forgot your password?
     </a>
   </div>
@@ -117,15 +146,31 @@
   <div>
     <button
       type="submit"
-      [disabled]="loading"
-      class="flex w-full justify-center rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50">
+      [disabled]="loading || form.invalid"
+      class="flex w-full justify-center rounded-md bg-blue-600 px-4 py-3 font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+      <!-- ✅ Loading spinner -->
+      <svg
+        *ngIf="loading"
+        class="-ml-1 mr-3 h-5 w-5 animate-spin text-white"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+
       {{ loading ? 'Signing in...' : 'Sign in' }}
     </button>
   </div>
 
-  <!-- Sign-up -->
+  <!-- Sign-up link -->
   <div class="text-muted-foreground flex items-center justify-center text-sm">
     Not a Member yet?
-    <a routerLink="/auth/sign-up" class="text-primary hover:text-primary-dark ml-1 font-medium"> Sign up </a>
+    <a routerLink="/auth/sign-up" class="text-primary hover:text-primary-dark ml-1 font-medium hover:underline">
+      Sign up
+    </a>
   </div>
 </form>
