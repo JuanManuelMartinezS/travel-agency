@@ -29,12 +29,12 @@ export class SecurityService {
   */
   saveSession(dataSesion: any) {
     let data: User = {
-      _id: dataSesion['user']['id'],
-      name: dataSesion['user']['name'],
-      email: dataSesion['user']['email'],
+      _id: dataSesion['uid'],
+      name: dataSesion['displayName'],
+      photoUrl: dataSesion['photoUrl'],
       password: '',
       //role:dataSesion["user"]["role"],
-      token: dataSesion['token'],
+      token: dataSesion['accessToken'],
     };
     localStorage.setItem('sesion', JSON.stringify(data));
     this.setUser(data);

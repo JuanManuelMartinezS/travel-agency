@@ -5,4 +5,5 @@ export interface User {
   password?: string;
   selected?: boolean;
   token?: string;
+  photoUrl?: string;
 }

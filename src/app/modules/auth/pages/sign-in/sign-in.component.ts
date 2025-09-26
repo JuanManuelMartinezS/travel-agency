@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { SecurityService } from 'src/app/core/services/security.service';
 
 export const USER_ROLES = {
   CUSTOMER: 'customers',
@@ -22,7 +23,7 @@ export const USER_ROLES = {
 export class SignInComponent implements OnInit {
   form!: FormGroup;
   submitted = false;
-  passwordTextType = false; // ← INICIALIZAR EN false
+  passwordTextType = false;
   loading = false;
   error = '';
   userRoles = USER_ROLES;
@@ -31,6 +32,7 @@ export class SignInComponent implements OnInit {
     private readonly _formBuilder: FormBuilder,
     private readonly _router: Router,
     private readonly _authService: AuthService,
+    private securityService: SecurityService,
   ) {}
 
   ngOnInit(): void {
@@ -90,6 +92,8 @@ export class SignInComponent implements OnInit {
     try {
       const user = await loginFunction();
 
+      this.securityService.saveSession(user);
+      console.log('redirigiendo');
       this._router.navigate([`/dashboard/nfts`]);
     } catch (error: any) {
       console.error('Error en login social:', error);
