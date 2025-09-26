@@ -7,6 +7,8 @@ import { AppRoutingModule } from './app/app-routing.module';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
+import { provideAuth, getAuth } from '@angular/fire/auth';
+import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 
 if (environment.production) {
   enableProdMode();
@@ -17,7 +19,12 @@ if (environment.production) {
 }
 
 bootstrapApplication(AppComponent, {
-  providers: [importProvidersFrom(BrowserModule, AppRoutingModule, HttpClientModule), provideAnimations()],
+  providers: [
+    importProvidersFrom(BrowserModule, AppRoutingModule, HttpClientModule),
+    provideAnimations(),
+    provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+    provideAuth(() => getAuth()),
+  ],
 }).catch((err) => console.error(err));
 
 function selfXSSWarning() {
