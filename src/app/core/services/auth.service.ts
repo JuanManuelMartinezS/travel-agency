@@ -182,18 +182,26 @@ export class AuthService {
     }
   }
 
-  // ✅ Cerrar sesión - SIN NgZone
   async logOut(): Promise<void> {
     try {
+      // Cerrar sesión en Firebase
       await signOut(this.auth);
-      localStorage.removeItem('currentRole');
-      this.router.navigate(['/auth/sign-in']);
+
+      // Limpiar todo el localStorage
+      localStorage.clear();
+
+      // Opcional: Limpiar sessionStorage si lo usas
+      sessionStorage.clear();
+
+      // Redirigir al usuario a la página de login
+      await this.router.navigate(['/auth/sign-in'], {
+        replaceUrl: true, // Evita que el usuario pueda volver atrás
+      });
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
       throw error;
     }
   }
-
   // ✅ Obtener usuario actual
   getCurrentUser(): User | null {
     return this.auth.currentUser;

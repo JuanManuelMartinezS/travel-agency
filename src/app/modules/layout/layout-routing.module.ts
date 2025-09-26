@@ -39,7 +39,7 @@ const routes: Routes = [
     loadChildren: () => import('../user-role/user-role.module').then((m) => m.UserRoleModule),
   },
   {
-    path: 'sessions', // Ruta separada para user-roles
+    path: 'sessions',
     component: LayoutComponent,
     loadChildren: () => import('../session/session.module').then((m) => m.SessionModule),
   },

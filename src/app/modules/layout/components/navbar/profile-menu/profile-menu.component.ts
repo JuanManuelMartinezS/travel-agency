@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { ThemeService } from '../../../../../core/services/theme.service';
 import { ClickOutsideDirective } from '../../../../../shared/directives/click-outside.directive';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
   selector: 'app-profile-menu',
@@ -50,7 +51,8 @@ export class ProfileMenuComponent implements OnInit {
     {
       title: 'Log out',
       icon: './assets/icons/heroicons/outline/logout.svg',
-      link: '/auth',
+      link: null,
+      action: () => this.logout(),
     },
   ];
 
@@ -88,7 +90,7 @@ export class ProfileMenuComponent implements OnInit {
   public themeMode = ['light', 'dark'];
   public themeDirection = ['ltr', 'rtl'];
 
-  constructor(public themeService: ThemeService) {}
+  constructor(public themeService: ThemeService, private authService: AuthService) {}
 
   ngOnInit(): void {}
 
@@ -113,5 +115,13 @@ export class ProfileMenuComponent implements OnInit {
     this.themeService.theme.update((theme) => {
       return { ...theme, direction: value };
     });
+  }
+  async logout() {
+    console.log('deslogueandose');
+    try {
+      await this.authService.logOut();
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
   }
 }
